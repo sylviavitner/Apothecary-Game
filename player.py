@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.moving = False
         self.direction = "right"
         self.scale = 3
-        self.speed = 3
+        self.speed = 5
         self.frames_list = self.get_frames()
         self.frame_cooldown = 250
         self.rect = self.frames_list[0].get_rect()
@@ -76,6 +76,11 @@ class Player(pygame.sprite.Sprite):
 
         self.update_frame(current_time)
 
+    def check_collisions(self, shop):
+        if pygame.sprite.collide_rect(self, shop):
+            shop.set_state(1)
+        else:
+            shop.set_state(0)
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
