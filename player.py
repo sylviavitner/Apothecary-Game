@@ -58,22 +58,21 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, current_time):
         keys = pygame.key.get_pressed()
+        self.moving = False
         if keys[pygame.K_RIGHT]:
             self.rect.x += self.speed
             self.direction = "right"
             self.moving = True
-        elif keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT]:
             self.rect.x -= self.speed
             self.direction = "left"
             self.moving = True
-        elif keys[pygame.K_UP]:
+        if keys[pygame.K_UP]:
             self.rect.y -= self.speed
             self.moving = True
-        elif keys[pygame.K_DOWN]:
+        if keys[pygame.K_DOWN]:
             self.rect.y += self.speed
             self.moving = True
-        else:
-            self.moving = False
 
         self.update_frame(current_time)
 
