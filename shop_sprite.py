@@ -15,6 +15,8 @@ class ShopSprite(pygame.sprite.Sprite):
         self.rect.y = 100
         self.frame = 0
         self.image = self.frames_list[self.frame]
+        self.show = True
+        self.name = ""
 
     # stolen from player.py, just gets the img from the sprite sheet same as before
     def get_image(self, w, h, frame, scale):
@@ -33,14 +35,22 @@ class ShopSprite(pygame.sprite.Sprite):
 
     # for now collisions are checked in main and this is called when player rect touches shop rect
     def set_state(self, state):
-        self.frame = state
-        self.image = self.frames_list[self.frame]
+        if state == 2:
+            self.show = False
+        else:
+            self.show = True
+            self.frame = state
+            self.image = self.frames_list[self.frame]
+
+    def set_name(self, name):
+        self.name = name
 
     def move(self):
         pass # will need to move opposite of player when the player reaches boundary of screen
 
     def draw(self, screen):
-        screen.blit(self.image, (self.rect.x, self.rect.y))
+        if self.show:
+            screen.blit(self.image, (self.rect.x, self.rect.y))
 
 
 

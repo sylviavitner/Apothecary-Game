@@ -25,6 +25,13 @@ class Player(pygame.sprite.Sprite):
         self.image = self.frames_list[self.frame]
         self.last_update = pygame.time.get_ticks()
 
+        # Shop variables
+        self.allow_shop_entry = False
+        self.inside_shop = False
+        self.shop_input_active = False # change to True when done debugging
+        self.shop_name = ""
+        self.max_name_length = 10
+
     # gets an img from sprite sheet
     def get_image(self, w, h, frame, scale):
         img = pygame.Surface((w, h), pygame.SRCALPHA).convert_alpha()
@@ -54,33 +61,52 @@ class Player(pygame.sprite.Sprite):
         if self.direction == "left":
             self.image = pygame.transform.flip(self.image, True, False)
 
-
-
-    def move(self, current_time):
+    def move(self, current_time, background, shop): # eventually list of sprites instead of just shop
         keys = pygame.key.get_pressed()
         self.moving = False
-        if keys[pygame.K_RIGHT]:
-            self.rect.x += self.speed
-            self.direction = "right"
-            self.moving = True
-        if keys[pygame.K_LEFT]:
-            self.rect.x -= self.speed
-            self.direction = "left"
-            self.moving = True
-        if keys[pygame.K_UP]:
-            self.rect.y -= self.speed
-            self.moving = True
-        if keys[pygame.K_DOWN]:
-            self.rect.y += self.speed
-            self.moving = True
+        if not self.shop_input_active:
+            # movement
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                self.rect.x += self.speed
+                self.direction = "right"
+                self.moving = True
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                self.rect.x -= self.speed
+                self.direction = "left"
+                self.moving = True
+            if keys[pygame.K_UP] or keys[pygame.K_w]:
+                self.rect.y -= self.speed
+                self.moving = True
+            if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                self.rect.y += self.speed
+                self.moving = True     
 
         self.update_frame(current_time)
 
     def check_collisions(self, shop):
+        if self.inside_shop:
+            return
         if pygame.sprite.collide_rect(self, shop):
+            self.allow_shop_entry = True
             shop.set_state(1)
         else:
+            self.allow_shop_entry = False
             shop.set_state(0)
+
+    def handle_event(self, event, background, shop):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+            if not self.inside_shop and self.allow_shop_entry:
+                self.inside_shop = True
+                background.set_state(1) # changes color
+                shop.set_state(2) # hide shop
+            elif self.inside_shop:
+                self.inside_shop = False
+                background.set_state(0)
+                shop.set_state(0)
+
+
+    def get_shop_name(self):
+        self.shop_input_active = True
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
