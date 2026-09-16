@@ -51,7 +51,7 @@ class ShopSprite(pygame.sprite.Sprite):
             screen.blit(self.image, (self.rect.x, self.rect.y))
             text = self.font.render(self.name, True, (255, 255, 235))
             # measures from middle bottom of text to displace from sprite
-            text_rect = text.get_rect(midbottom=(self.rect.centerx, self.rect.y))
+            text_rect = text.get_rect(midbottom=(self.rect.centerx, self.rect.y + 50)) # fix sprites later
             screen.blit(text, text_rect)
 
 
