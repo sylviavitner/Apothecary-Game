@@ -3,7 +3,7 @@
 import pygame
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, img):
+    def __init__(self, img, width, height):
         pygame.sprite.Sprite.__init__(self)
 
         # player vars
@@ -24,6 +24,11 @@ class Player(pygame.sprite.Sprite):
         self.frame = 0
         self.image = self.frames_list[self.frame]
         self.last_update = pygame.time.get_ticks()
+        # map boundaries
+        self.bound_w = 200
+        self.bound_e = width - 300
+        self.bound_n = 200
+        self.bound_s = height - 300
 
         # Shop variables
         self.allow_shop_entry = False
@@ -67,18 +72,22 @@ class Player(pygame.sprite.Sprite):
         if not self.shop_input_active:
             # movement
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                self.rect.x += self.speed
+                if self.rect.x < self.bound_e:
+                    self.rect.x += self.speed
                 self.direction = "right"
                 self.moving = True
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                self.rect.x -= self.speed
+                if self.rect.x > self.bound_w:
+                    self.rect.x -= self.speed
                 self.direction = "left"
                 self.moving = True
             if keys[pygame.K_UP] or keys[pygame.K_w]:
-                self.rect.y -= self.speed
+                if self.rect.y > self.bound_n:
+                    self.rect.y -= self.speed
                 self.moving = True
             if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                self.rect.y += self.speed
+                if self.rect.y < self.bound_s:
+                    self.rect.y += self.speed
                 self.moving = True     
 
         self.update_frame(current_time)

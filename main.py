@@ -5,6 +5,7 @@ from player import Player
 from shop_sprite import ShopSprite
 from background import Background
 from start_screen import StartScreen
+from bush import Bush
 
 pygame.init()
 
@@ -17,10 +18,12 @@ BG_STATE = 0
 
 pygame.display.set_caption("Apothecary Shop Sim")
 
-player = Player("assets/player.png")
+player = Player("assets/player.png", WIDTH, HEIGHT)
 shop_sprite = ShopSprite("assets/shop.png")
 background = Background()
 start_screen = StartScreen()
+# bush (temp)
+bush = Bush("assets/bush.png")
 
 run = True
 while run:
@@ -43,6 +46,8 @@ while run:
     else:
         # draw shop sprite on map
         shop_sprite.draw(SCREEN)
+        # bush
+        bush.draw(SCREEN)
         # move and draw player
         player.check_collisions(shop_sprite)
         player.move(current_time)
