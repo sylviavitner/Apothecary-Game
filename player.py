@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         # Shop variables
         self.allow_shop_entry = False
         self.inside_shop = False
-        self.shop_input_active = False # change to True when done debugging
+        self.shop_input_active = True # change to True when done debugging
         self.shop_name = ""
         self.max_name_length = 10
 
@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):
         if self.direction == "left":
             self.image = pygame.transform.flip(self.image, True, False)
 
-    def move(self, current_time, background, shop): # eventually list of sprites instead of just shop
+    def move(self, current_time): # eventually list of sprites instead of just shop
         keys = pygame.key.get_pressed()
         self.moving = False
         if not self.shop_input_active:
@@ -94,7 +94,21 @@ class Player(pygame.sprite.Sprite):
             shop.set_state(0)
 
     def handle_event(self, event, background, shop):
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+        # get shop name input
+        if event.type != pygame.KEYDOWN:
+            return
+        if self.shop_input_active:
+            if event.key == pygame.K_BACKSPACE:
+                self.shop_name = self.shop_name[:-1]
+            elif event.key == pygame.K_RETURN:
+                if self.shop_name.strip():
+                    self.shop_input_active = False
+                    shop.name = self.shop_name
+            elif len(self.shop_name) < self.max_name_length and event.unicode.isprintable():
+                self.shop_name += event.unicode
+
+        # setting state for shop interactions
+        elif event.key == pygame.K_e:
             if not self.inside_shop and self.allow_shop_entry:
                 self.inside_shop = True
                 background.set_state(1) # changes color

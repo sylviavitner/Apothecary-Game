@@ -17,6 +17,7 @@ class ShopSprite(pygame.sprite.Sprite):
         self.image = self.frames_list[self.frame]
         self.show = True
         self.name = ""
+        self.font = pygame.font.SysFont("opensans", 49)
 
     # stolen from player.py, just gets the img from the sprite sheet same as before
     def get_image(self, w, h, frame, scale):
@@ -42,15 +43,17 @@ class ShopSprite(pygame.sprite.Sprite):
             self.frame = state
             self.image = self.frames_list[self.frame]
 
-    def set_name(self, name):
-        self.name = name
-
     def move(self):
         pass # will need to move opposite of player when the player reaches boundary of screen
 
     def draw(self, screen):
         if self.show:
             screen.blit(self.image, (self.rect.x, self.rect.y))
+            text = self.font.render(self.name, True, (255, 255, 235))
+            # measures from middle bottom of text to displace from sprite
+            text_rect = text.get_rect(midbottom=(self.rect.centerx, self.rect.y))
+            screen.blit(text, text_rect)
+
 
 
 

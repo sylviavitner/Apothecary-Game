@@ -4,6 +4,7 @@ import pygame
 from player import Player
 from shop_sprite import ShopSprite
 from background import Background
+from start_screen import StartScreen
 
 pygame.init()
 
@@ -19,6 +20,7 @@ pygame.display.set_caption("Apothecary Shop Sim")
 player = Player("assets/player.png")
 shop_sprite = ShopSprite("assets/shop.png")
 background = Background()
+start_screen = StartScreen()
 
 run = True
 while run:
@@ -35,13 +37,16 @@ while run:
     # fill bg
     SCREEN.fill(background.current_bg)
 
-    # draw shop sprite on map
-    shop_sprite.draw(SCREEN)
+    if player.shop_input_active:
+        start_screen.draw(SCREEN, player, current_time)
 
-    # move and draw player
-    player.check_collisions(shop_sprite)
-    player.move(current_time, background, shop_sprite)
-    player.draw(SCREEN)
+    else:
+        # draw shop sprite on map
+        shop_sprite.draw(SCREEN)
+        # move and draw player
+        player.check_collisions(shop_sprite)
+        player.move(current_time)
+        player.draw(SCREEN)
 
     pygame.display.flip()
 
