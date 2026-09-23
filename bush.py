@@ -1,4 +1,5 @@
 import pygame
+import random
 from sprite import Sprite
 
 class Bush(Sprite):

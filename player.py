@@ -67,12 +67,13 @@ class Player(pygame.sprite.Sprite):
         if self.direction == "left":
             self.image = pygame.transform.flip(self.image, True, False)
 
-    def move(self, current_time): # eventually list of sprites instead of just shop
+    def move(self, current_time, screen): # eventually list of sprites instead of just shop
         keys = pygame.key.get_pressed()
         self.moving = False
         self.dx = 0
         self.dy = 0
-        if not self.shop_input_active:
+        if not self.shop_input_active and not self.inside_shop:
+            self.rect.center = screen.get_rect().center
             # movement
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 self.direction = "right"
@@ -87,7 +88,12 @@ class Player(pygame.sprite.Sprite):
                 self.moving = True
             if keys[pygame.K_DOWN] or keys[pygame.K_s]:
                 self.dy += 1
-                self.moving = True     
+                self.moving = True   
+
+        elif self.inside_shop:  
+            self.rect.x = 200 # maybe change?
+            self.direction = "right"
+        
 
         self.update_frame(current_time)
 
