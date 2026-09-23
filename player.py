@@ -25,7 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         # to keep track of player movement relative to other objects.
         # other sprites on map move by -dx, -dy * player speed
-        self.dx = 0 # -1, 0, or 1 
+        self.dx = 0
         self.dy = 0
         # map boundaries
         #self.bound_w = 200
@@ -93,15 +93,20 @@ class Player(pygame.sprite.Sprite):
 
         self.update_frame(current_time)
 
-    def check_collisions(self, shop):
+    def check_collisions(self, shop, m_sprites):
         if self.inside_shop:
+            for s in m_sprites:
+                s.set_state(0)
             return
         if pygame.sprite.collide_rect(self, shop):
             self.allow_shop_entry = True
-            shop.set_state(1)
+            shop.set_frame(1)
         else:
             self.allow_shop_entry = False
-            shop.set_state(0)
+            shop.set_frame(0)
+
+        for s in m_sprites:
+            s.set_state(1) # show map sprites when not in shop
 
     def handle_event(self, event, background, shop):
         # get shop name input
@@ -122,7 +127,7 @@ class Player(pygame.sprite.Sprite):
             if not self.inside_shop and self.allow_shop_entry:
                 self.inside_shop = True
                 background.set_state(1) # changes color
-                shop.set_state(2) # hide shop
+                shop.set_state(0) # hide shop
             elif self.inside_shop:
                 self.inside_shop = False
                 background.set_state(0)

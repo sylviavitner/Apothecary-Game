@@ -15,6 +15,7 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.x = x_pos
         self.rect.y = y_pos
         self.image = self.frames_list[self.frame]
+        self.show = True
        
     def get_image(self, frame, scale):
         img = pygame.Surface((self.size, self.size), pygame.SRCALPHA).convert_alpha()
@@ -29,9 +30,21 @@ class Sprite(pygame.sprite.Sprite):
             frames.append(frame)
         return frames
 
+    def set_frame(self, frame):
+        if frame < self.num_frames:
+            self.frame = frame
+            self.image = self.frames_list[self.frame]
+
     def move(self, dx, dy): # eventually list of sprites instead of just shop
         self.rect.x += dx
         self.rect.y += dy
 
+    def set_state(self, state):
+        if state == 0:
+            self.show = False
+        else:
+            self.show = True
+
     def draw(self, screen):
-        screen.blit(self.image, (self.rect.x, self.rect.y))
+        if self.show:
+            screen.blit(self.image, (self.rect.x, self.rect.y))

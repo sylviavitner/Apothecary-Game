@@ -5,20 +5,10 @@ class ShopSprite(Sprite):
     def __init__(self, img, x_pos=800, y_pos=100):
         # now inherits from sprite
         super().__init__(img, size=64, num_frames=2, x_pos=x_pos, y_pos=y_pos, scale=5)
-        self.state = 0
+        self.state = 1
         self.show = True
         self.name = ""
         self.font = pygame.font.SysFont("opensans", 49)
-
-    # for now collisions are checked in main and this is called when player rect touches shop rect
-    def set_state(self, state):
-        if state == 2:
-            self.show = False
-        else:
-            self.show = True
-            self.frame = state
-            self.image = self.frames_list[self.frame]
-
    
     def draw(self, screen):
         if self.show:

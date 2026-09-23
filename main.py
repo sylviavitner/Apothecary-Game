@@ -48,7 +48,7 @@ while run:
 
     else:
         # check player collisions and move player
-        player.check_collisions(shop_sprite)
+        player.check_collisions(shop_sprite, map_sprites)
         player.move(current_time)
    
         # move sprites opposite of player
