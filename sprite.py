@@ -3,13 +3,13 @@
 import pygame
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, img, size, num_frames, x_pos, y_pos, scale=5):
+    def __init__(self, img, size, num_frames, x_pos, y_pos, scale=5, frame=0):
         pygame.sprite.Sprite.__init__(self)
         self.images = pygame.image.load(img).convert_alpha()
         self.scale = scale
         self.size = size
         self.num_frames = num_frames
-        self.frame = 0
+        self.frame = frame
         self.frames_list = self.get_frames()
         self.rect = self.frames_list[0].get_rect()
         self.rect.x = x_pos
@@ -35,7 +35,7 @@ class Sprite(pygame.sprite.Sprite):
             self.frame = frame
             self.image = self.frames_list[self.frame]
 
-    def move(self, dx, dy): # eventually list of sprites instead of just shop
+    def move(self, dx, dy):
         self.rect.x += dx
         self.rect.y += dy
 

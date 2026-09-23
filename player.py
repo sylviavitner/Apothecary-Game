@@ -27,11 +27,6 @@ class Player(pygame.sprite.Sprite):
         # other sprites on map move by -dx, -dy * player speed
         self.dx = 0
         self.dy = 0
-        # map boundaries
-        #self.bound_w = 200
-        #self.bound_e = width - 300
-        #self.bound_n = 200
-        #self.bound_s = height - 300
 
         # Shop variables
         self.allow_shop_entry = False
@@ -39,6 +34,9 @@ class Player(pygame.sprite.Sprite):
         self.shop_input_active = True # change to True when done debugging
         self.shop_name = ""
         self.max_name_length = 20
+
+        # Material variables
+        self.berry_count = 0
 
     # gets an img from sprite sheet
     def get_image(self, w, h, frame, scale):
@@ -93,22 +91,42 @@ class Player(pygame.sprite.Sprite):
 
         self.update_frame(current_time)
 
-    def check_collisions(self, shop, m_sprites):
-        if self.inside_shop:
-            for s in m_sprites:
-                s.set_state(0)
-            return
-        if pygame.sprite.collide_rect(self, shop):
-            self.allow_shop_entry = True
-            shop.set_frame(1)
-        else:
-            self.allow_shop_entry = False
-            shop.set_frame(0)
-
+    def check_collisions(self, m_sprites):
         for s in m_sprites:
-            s.set_state(1) # show map sprites when not in shop
+            if self.inside_shop:
+                s.set_state(0)
+                return
+            else:
+                s.set_state(1)
 
-    def handle_event(self, event, background, shop):
+            # allow shop entry when interacting with shop sprite
+            if s.name == "shop":
+                if pygame.sprite.collide_rect(self, s):
+                    self.allow_shop_entry = True
+                    s.set_frame(1)
+                else:
+                    self.allow_shop_entry = False
+                    s.set_frame(0)
+
+            # allow harvest when interacting with bush sprite
+            if s.name == "bush":
+                if pygame.sprite.collide_rect(self, s):
+                    if s.has_berries:
+                        s.set_frame(3)
+                        s.can_harvest = True
+                    #else:
+                        #s.set_frame(1) *no more interaction frame when bush is berryless*
+                else:
+                    if s.has_berries:
+                        s.set_frame(2)
+                    else:
+                        s.set_frame(0)
+
+    # just adds a berry to the count (for now)
+    def harvest_bush(self):
+        self.berry_count += 1
+
+    def handle_event(self, event, background, shop, m_sprites):
         # get shop name input
         if event.type != pygame.KEYDOWN:
             return
@@ -118,21 +136,29 @@ class Player(pygame.sprite.Sprite):
             elif event.key == pygame.K_RETURN:
                 if self.shop_name.strip():
                     self.shop_input_active = False
-                    shop.name = self.shop_name
+                    shop.shop_name = self.shop_name
             elif len(self.shop_name) < self.max_name_length and event.unicode.isprintable():
                 self.shop_name += event.unicode
 
-        # setting state for shop interactions
+        # setting states for sprite interactions
         elif event.key == pygame.K_e:
             if not self.inside_shop and self.allow_shop_entry:
                 self.inside_shop = True
                 background.set_state(1) # changes color
-                shop.set_state(0) # hide shop
+                for s in m_sprites:
+                    s.set_state(0) # hide all map sprites
+            elif not self.inside_shop and not self.allow_shop_entry:
+                for s in m_sprites:
+                    if s.name == "bush" and s.can_harvest:
+                        # harvesting berries
+                        s.can_harvest = False
+                        s.has_berries = False
+                        s.set_frame(0)
+                        self.harvest_bush()
             elif self.inside_shop:
                 self.inside_shop = False
                 background.set_state(0)
                 shop.set_state(0)
-
 
     def get_shop_name(self):
         self.shop_input_active = True

@@ -38,7 +38,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        player.handle_event(event, background, shop_sprite)
+        player.handle_event(event, background, shop_sprite, map_sprites)
 
     # fill bg
     SCREEN.fill(background.current_bg)
@@ -48,7 +48,7 @@ while run:
 
     else:
         # check player collisions and move player
-        player.check_collisions(shop_sprite, map_sprites)
+        player.check_collisions(map_sprites)
         player.move(current_time)
    
         # move sprites opposite of player
