@@ -18,12 +18,15 @@ BG_STATE = 0
 
 pygame.display.set_caption("Apothecary Shop Sim")
 
-player = Player("assets/player.png", WIDTH, HEIGHT)
+player = Player("assets/player.png", SCREEN)
 shop_sprite = ShopSprite("assets/shop.png")
 background = Background()
 start_screen = StartScreen()
 # bush (temp)
 bush = Bush("assets/bush.png")
+
+# all of the sprites that appear on the map are grouped and move together
+map_sprites = pygame.sprite.Group(shop_sprite, bush)
 
 run = True
 while run:
@@ -44,13 +47,19 @@ while run:
         start_screen.draw(SCREEN, player, current_time)
 
     else:
-        # draw shop sprite on map
-        shop_sprite.draw(SCREEN)
-        # bush
-        bush.draw(SCREEN)
-        # move and draw player
+        # check player collisions and move player
         player.check_collisions(shop_sprite)
         player.move(current_time)
+   
+        # move sprites opposite of player
+        for sprite in map_sprites:
+            sprite.move(-player.dx * player.speed, -player.dy * player.speed)
+
+        # draw sprites
+        for sprite in map_sprites:
+            sprite.draw(SCREEN)
+
+        # draw player
         player.draw(SCREEN)
 
     pygame.display.flip()

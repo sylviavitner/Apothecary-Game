@@ -3,7 +3,7 @@
 import pygame
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, img, width, height):
+    def __init__(self, img, screen):
         pygame.sprite.Sprite.__init__(self)
 
         # player vars
@@ -19,23 +19,26 @@ class Player(pygame.sprite.Sprite):
         self.frames_list = self.get_frames()
         self.frame_cooldown = 250
         self.rect = self.frames_list[0].get_rect()
-        self.rect.x = 400
-        self.rect.y = 400
+        self.rect.center = screen.get_rect().center # center sprite instead
         self.frame = 0
         self.image = self.frames_list[self.frame]
         self.last_update = pygame.time.get_ticks()
+        # to keep track of player movement relative to other objects.
+        # other sprites on map move by -dx, -dy * player speed
+        self.dx = 0 # -1, 0, or 1 
+        self.dy = 0
         # map boundaries
-        self.bound_w = 200
-        self.bound_e = width - 300
-        self.bound_n = 200
-        self.bound_s = height - 300
+        #self.bound_w = 200
+        #self.bound_e = width - 300
+        #self.bound_n = 200
+        #self.bound_s = height - 300
 
         # Shop variables
         self.allow_shop_entry = False
         self.inside_shop = False
         self.shop_input_active = True # change to True when done debugging
         self.shop_name = ""
-        self.max_name_length = 10
+        self.max_name_length = 20
 
     # gets an img from sprite sheet
     def get_image(self, w, h, frame, scale):
@@ -69,25 +72,23 @@ class Player(pygame.sprite.Sprite):
     def move(self, current_time): # eventually list of sprites instead of just shop
         keys = pygame.key.get_pressed()
         self.moving = False
+        self.dx = 0
+        self.dy = 0
         if not self.shop_input_active:
             # movement
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                if self.rect.x < self.bound_e:
-                    self.rect.x += self.speed
                 self.direction = "right"
+                self.dx += 1
                 self.moving = True
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                if self.rect.x > self.bound_w:
-                    self.rect.x -= self.speed
                 self.direction = "left"
+                self.dx -= 1
                 self.moving = True
             if keys[pygame.K_UP] or keys[pygame.K_w]:
-                if self.rect.y > self.bound_n:
-                    self.rect.y -= self.speed
+                self.dy -= 1
                 self.moving = True
             if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                if self.rect.y < self.bound_s:
-                    self.rect.y += self.speed
+                self.dy += 1
                 self.moving = True     
 
         self.update_frame(current_time)
