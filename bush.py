@@ -1,3 +1,4 @@
+import pygame
 from sprite import Sprite
 
 class Bush(Sprite):
@@ -7,5 +8,13 @@ class Bush(Sprite):
         self.name = "bush"
         self.has_berries = True
         self.can_harvest = False
+        self.last_harvested = pygame.time.get_ticks()
+        self.berry_cooldown = 30000
+
+    def grow_berries(self, current_time):
+        if current_time - self.last_harvested >= self.berry_cooldown:
+            self.has_berries = True
+            self.last_harvested = pygame.time.get_ticks()
+
 
 

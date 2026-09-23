@@ -50,6 +50,7 @@ while run:
         # check player collisions and move player
         player.check_collisions(map_sprites)
         player.move(current_time)
+        bush.grow_berries(current_time)
    
         # move sprites opposite of player
         for sprite in map_sprites:
