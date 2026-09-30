@@ -48,6 +48,8 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         player.handle_event(event, background, shop_sprite, map_sprites)
+        for button in shop_sprite_group:
+            button.handle_event(event, player, background, shop_sprite)
 
     # fill bg
     SCREEN.fill(background.current_bg)

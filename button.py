@@ -7,8 +7,22 @@ class Button(Sprite):
         self.images = pygame.image.load(img).convert_alpha()
         self.type = type
 
-    def detect_mouse_press(self):
-        pass
+    def handle_event(self, event, player, background, shop):
+        if event.type != pygame.MOUSEBUTTONDOWN:
+            return
+        elif event.button == 1: # left mouse click
+            if self.rect.collidepoint(event.pos):
+                match self.type:
+                    case "exit":
+                        player.inside_shop = False
+                        background.set_state(0)
+                        shop.set_state(0)
+                    case "open_close":
+                        pass
+                    case "edit":
+                        pass
+                    case "buy":
+                        pass
 
 
 
