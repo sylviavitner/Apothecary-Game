@@ -125,9 +125,8 @@ class Player(pygame.sprite.Sprite):
                     if s.has_berries:
                         s.set_frame(3)
                         s.can_harvest = True
-                    #else:
-                        #s.set_frame(1) *no more interaction frame when bush is berryless*
                 else:
+                    s.can_harvest = False
                     if s.has_berries:
                         s.set_frame(2)
                     else:
@@ -165,11 +164,8 @@ class Player(pygame.sprite.Sprite):
                         s.can_harvest = False
                         s.has_berries = False
                         s.set_frame(0)
+                        s.last_harvested = pygame.time.get_ticks()
                         self.harvest_bush()
-            elif self.inside_shop:
-                self.inside_shop = False
-                background.set_state(0)
-                shop.set_state(0)
 
     def get_shop_name(self):
         self.shop_input_active = True

@@ -1,6 +1,7 @@
 # main game loop
 
 import pygame
+import random
 from player import Player
 from shop_sprite import ShopSprite
 from background import Background
@@ -25,9 +26,12 @@ background = Background()
 start_screen = StartScreen()
 # bush (temp)
 bush = Bush("assets/bush.png")
+bush2 = Bush("assets/bush.png", 1400, 800)
+bush3 = Bush("assets/bush.png", 600, 700)
+bushes = pygame.sprite.Group(bush, bush2, bush3)
 
 # all of the sprites that appear on the map are grouped and move together
-map_sprites = pygame.sprite.Group(shop_sprite, bush)
+map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2, bush3)
 
 # buttons
 exit_button = Button("assets/buttons.png", 300, 900, "exit", 0)
@@ -61,7 +65,9 @@ while run:
         # check player collisions and move player
         player.check_collisions(map_sprites, shop_sprite_group)
         player.move(current_time, SCREEN)
-        bush.grow_berries(current_time)
+        # grow berries after cooldown
+        for b in bushes:
+            b.grow_berries(current_time)
    
         # move sprites opposite of player
         for sprite in map_sprites:

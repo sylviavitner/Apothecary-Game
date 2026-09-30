@@ -14,7 +14,6 @@ class Bush(Sprite):
     def grow_berries(self, current_time):
         if current_time - self.last_harvested >= self.berry_cooldown:
             self.has_berries = True
-            self.last_harvested = pygame.time.get_ticks()
 
 
 

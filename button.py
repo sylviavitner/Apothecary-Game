@@ -18,7 +18,10 @@ class Button(Sprite):
                         background.set_state(0)
                         shop.set_state(0)
                     case "open_close":
-                        pass
+                        if self.frame == 1:
+                            self.set_frame(2)
+                        elif self.frame == 2:
+                            self.set_frame(1)
                     case "edit":
                         pass
                     case "buy":
