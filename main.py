@@ -6,6 +6,7 @@ from shop_sprite import ShopSprite
 from background import Background
 from start_screen import StartScreen
 from bush import Bush
+from button import Button
 
 pygame.init()
 
@@ -28,6 +29,14 @@ bush = Bush("assets/bush.png")
 # all of the sprites that appear on the map are grouped and move together
 map_sprites = pygame.sprite.Group(shop_sprite, bush)
 
+# buttons
+exit_button = Button("assets/buttons.png", 300, 900, "exit", 0)
+open_close_button = Button("assets/buttons.png", 700, 900, "open_close", 1)
+edit_button = Button("assets/buttons.png", 1100, 900, "edit", 3)
+buy_button = Button("assets/buttons.png", 1500, 900, "buy", 4)
+
+shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, edit_button, buy_button)
+
 run = True
 while run:
 
@@ -48,7 +57,7 @@ while run:
 
     else:
         # check player collisions and move player
-        player.check_collisions(map_sprites)
+        player.check_collisions(map_sprites, shop_sprite_group)
         player.move(current_time, SCREEN)
         bush.grow_berries(current_time)
    
@@ -58,6 +67,9 @@ while run:
 
         # draw sprites
         for sprite in map_sprites:
+            sprite.draw(SCREEN)
+
+        for sprite in shop_sprite_group:
             sprite.draw(SCREEN)
 
         # draw player

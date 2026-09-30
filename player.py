@@ -96,7 +96,13 @@ class Player(pygame.sprite.Sprite):
         
         self.update_frame(current_time)
 
-    def check_collisions(self, m_sprites):
+    def check_collisions(self, m_sprites, s_sprites):
+        for s in s_sprites:
+            if self.inside_shop:
+                s.set_state(1)
+            else:
+                s.set_state(0)
+                
         for s in m_sprites:
             if self.inside_shop:
                 s.set_state(0)
