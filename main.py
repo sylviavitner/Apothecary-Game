@@ -34,10 +34,10 @@ bushes = pygame.sprite.Group(bush, bush2, bush3)
 map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2, bush3)
 
 # buttons
-exit_button = Button("assets/buttons.png", 300, 900, "exit", 0)
-open_close_button = Button("assets/buttons.png", 700, 900, "open_close", 1)
-edit_button = Button("assets/buttons.png", 1100, 900, "edit", 3)
-buy_button = Button("assets/buttons.png", 1500, 900, "buy", 4)
+exit_button = Button("assets/buttons.png", 300, 50, "exit", 0)
+open_close_button = Button("assets/buttons.png", 700, 50, "open_close", 1)
+edit_button = Button("assets/buttons.png", 1100, 50, "edit", 3)
+buy_button = Button("assets/buttons.png", 1500, 50, "buy", 4)
 
 shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, edit_button, buy_button)
 
