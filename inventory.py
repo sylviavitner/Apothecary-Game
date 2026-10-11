@@ -68,6 +68,10 @@ class Inventory():
                     slot.rect.x = start_x + col * dx
                     slot.rect.y = start_y + row * dx
                     slot.draw(screen)
+                    # set items positions in slot and draw if they exist
+                    if slot.item:
+                        slot.item.set_position(slot.rect.x, slot.rect.y)
+                        slot.item.draw(screen)
                     i += 1
         else:
             y = screen_h - self.slot_size - self.margin
@@ -76,6 +80,7 @@ class Inventory():
                 slot.rect.x = start_x + i * dx
                 slot.rect.y = y
                 slot.draw(screen)
-            # draw first 5 slots (hotbar) on bottom center of the screen
-
+                if slot.item:
+                    slot.item.set_position(slot.rect.x, slot.rect.y)
+                    slot.item.draw(screen)
         

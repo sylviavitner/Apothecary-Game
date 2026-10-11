@@ -9,6 +9,7 @@ from start_screen import StartScreen
 from bush import Bush
 from button import Button
 from inventory import Inventory
+from item import Item
 
 pygame.init()
 
@@ -45,6 +46,12 @@ shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, edit_but
 
 # inventory
 inventory = Inventory("assets/slot.png")
+
+
+#### TEMPORARY BERRY
+
+berry = Item("assets/red_berry.png", "red_berry")
+berry.add_to_item_slot(inventory)
 
 run = True
 while run:
