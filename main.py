@@ -1,5 +1,3 @@
-# main game loop
-
 import pygame
 import random
 from player import Player
@@ -22,36 +20,32 @@ BG_STATE = 0
 
 pygame.display.set_caption("Apothecary Shop Sim")
 
+# initialize sprites
 player = Player("assets/player.png", SCREEN)
 shop_sprite = ShopSprite("assets/shop.png")
 background = Background()
 start_screen = StartScreen()
-# bush (temp)
+
+# todo: randomize bush spawns
 bush = Bush("assets/bush.png")
 bush2 = Bush("assets/bush.png", 1400, 800)
 bush3 = Bush("assets/bush.png", 600, 700)
 bushes = pygame.sprite.Group(bush, bush2, bush3)
 
-# all of the sprites that appear on the map are grouped and move together
+# sprites that appear on the map (outside and only of the shop)
 map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2, bush3)
 
-# buttons
+# shop buttons
 exit_button = Button("assets/buttons.png", 300, 50, "exit", 0)
 open_close_button = Button("assets/buttons.png", 700, 50, "open_close", 1)
 edit_button = Button("assets/buttons.png", 1100, 50, "edit", 3)
 buy_button = Button("assets/buttons.png", 1500, 50, "buy", 4)
 
-# group shop sprites
+# sprites that appear inside the shop (and only inside the shop)
 shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, edit_button, buy_button)
 
 # inventory
 inventory = Inventory("assets/slot.png")
-
-
-#### TEMPORARY BERRY
-
-berry = Item("assets/red_berry.png", "red_berry")
-berry.add_to_item_slot(inventory)
 
 run = True
 while run:
@@ -64,7 +58,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         # player events
-        player.handle_event(event, background, shop_sprite, map_sprites)
+        player.handle_event(event, background, shop_sprite, map_sprites, inventory)
         # shop events
         for button in shop_sprite_group:
             button.handle_event(event, player, background, shop_sprite)

@@ -1,5 +1,6 @@
 import pygame
 from sprite import Sprite
+from item import RedBerry
 
 class Bush(Sprite):
     def __init__(self, img, x_pos=400, y_pos=600):
@@ -14,6 +15,16 @@ class Bush(Sprite):
     def grow_berries(self, current_time):
         if current_time - self.last_harvested >= self.berry_cooldown:
             self.has_berries = True
+
+    def harvest(self, inventory):
+        self.can_harvest = False
+        self.has_berries = False
+        self.set_frame(0)
+        self.last_harvested = pygame.time.get_ticks()
+        # for now, creates a new berry and adds to inventory
+        berry = RedBerry()
+        inventory.add(berry)
+
 
 
 

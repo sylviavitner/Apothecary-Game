@@ -13,3 +13,7 @@ class Item(Sprite):
     def set_position(self, x, y):
         self.rect.x = x
         self.rect.y = y
+
+class RedBerry(Item):
+    def __init__(self):
+        super().__init__("assets/red_berry.png", "red_berry")

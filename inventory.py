@@ -1,5 +1,12 @@
-from item_slot import ItemSlot
 import pygame
+from sprite import Sprite
+
+class ItemSlot(Sprite):
+    def __init__(self, img, x_pos=0, y_pos=0, scale=3):
+        super().__init__ (img, size=32, num_frames=1, x_pos=x_pos, y_pos=y_pos, scale=scale, frame=0)
+        self.item = None
+        self.quantity = 0
+        self.image.set_alpha(127) # opacity
 
 class Inventory():
     def __init__(self, slot_img):
@@ -13,6 +20,7 @@ class Inventory():
         self.slot_size = 32 * self.scale
         self.gap = 32
         self.margin = 32
+        self.font = pygame.font.SysFont("opensans", 24) # font for item count
 
         for _ in range(self.capacity):
             self.slots.append(ItemSlot(slot_img, scale=self.scale))
@@ -20,7 +28,7 @@ class Inventory():
     def add(self, item, amount=1):
         # adding to preexisting item stack
         for slot in self.slots:
-            if slot.item == item:
+            if slot.item != None and slot.item.name == item.name:
                 add_amount = amount
                 if add_amount > item.stack_size - slot.quantity:
                     add_amount = item.stack_size - slot.quantity
@@ -72,6 +80,11 @@ class Inventory():
                     if slot.item:
                         slot.item.set_position(slot.rect.x, slot.rect.y)
                         slot.item.draw(screen)
+                        # show how many of an item in a slot
+                        n = self.font.render(str(slot.quantity), True, (255, 255, 235))
+                        n_rect = n.get_rect(bottomright=(slot.rect.right - 4, slot.rect.bottom))
+                        screen.blit(n, n_rect)
+
                     i += 1
         else:
             y = screen_h - self.slot_size - self.margin
@@ -83,4 +96,8 @@ class Inventory():
                 if slot.item:
                     slot.item.set_position(slot.rect.x, slot.rect.y)
                     slot.item.draw(screen)
+                    # show how many of an item in a slot
+                    n = self.font.render(str(slot.quantity), True, (255, 255, 235))
+                    n_rect = n.get_rect(bottomright=(slot.rect.right - 4, slot.rect.bottom))
+                    screen.blit(n, n_rect)
         

@@ -132,11 +132,14 @@ class Player(pygame.sprite.Sprite):
                     else:
                         s.set_frame(0)
 
-    # just adds a berry to the count (for now)
-    def harvest_bush(self):
+    def harvest_bush(self, inventory):
         self.berry_count += 1
+        # add a berry to inventory
+        # eventually split the chance of adding red berry or other items
 
-    def handle_event(self, event, background, shop, m_sprites):
+
+
+    def handle_event(self, event, background, shop, m_sprites, inventory):
         # get shop name input
         if event.type != pygame.KEYDOWN:
             return
@@ -160,12 +163,8 @@ class Player(pygame.sprite.Sprite):
             elif not self.inside_shop and not self.allow_shop_entry:
                 for s in m_sprites:
                     if s.name == "bush" and s.can_harvest:
-                        # harvesting berries
-                        s.can_harvest = False
-                        s.has_berries = False
-                        s.set_frame(0)
-                        s.last_harvested = pygame.time.get_ticks()
-                        self.harvest_bush()
+                        s.harvest(inventory)
+                        
 
     def get_shop_name(self):
         self.shop_input_active = True
