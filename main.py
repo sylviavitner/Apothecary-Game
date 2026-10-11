@@ -8,6 +8,7 @@ from background import Background
 from start_screen import StartScreen
 from bush import Bush
 from button import Button
+from inventory import Inventory
 
 pygame.init()
 
@@ -39,7 +40,11 @@ open_close_button = Button("assets/buttons.png", 700, 50, "open_close", 1)
 edit_button = Button("assets/buttons.png", 1100, 50, "edit", 3)
 buy_button = Button("assets/buttons.png", 1500, 50, "buy", 4)
 
+# group shop sprites
 shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, edit_button, buy_button)
+
+# inventory
+inventory = Inventory("assets/slot.png")
 
 run = True
 while run:
@@ -51,13 +56,18 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        # player events
         player.handle_event(event, background, shop_sprite, map_sprites)
+        # shop events
         for button in shop_sprite_group:
             button.handle_event(event, player, background, shop_sprite)
+        # inventory events
+        inventory.handle_event(event)
 
     # fill bg
     SCREEN.fill(background.current_bg)
 
+    # before the game starts
     if player.shop_input_active:
         start_screen.draw(SCREEN, player, current_time)
 
@@ -82,6 +92,9 @@ while run:
 
         # draw player
         player.draw(SCREEN)
+
+        # draw inventory
+        inventory.draw(SCREEN)
 
     pygame.display.flip()
 
