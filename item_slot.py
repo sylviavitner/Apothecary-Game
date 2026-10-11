@@ -6,4 +6,5 @@ class ItemSlot(Sprite):
         super().__init__ (img, size=32, num_frames=1, x_pos=x_pos, y_pos=y_pos, scale=scale, frame=0)
         self.item = None
         self.quantity = 0
+        self.image.set_alpha(127) # opacity
         

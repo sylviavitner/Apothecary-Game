@@ -53,13 +53,13 @@ class Inventory():
         screen_w, screen_h = screen.get_size()
         dx = self.slot_size + self.gap
         inv_w = (self.slot_size + self.gap) * self.columns
-        start_x = (screen_w // 2) - (inv_w // 2)
+        start_x = screen_w // 2 - inv_w // 2
         
         if self.extend:
             # draw full extended inventory on screen, moving the 5 hotbar slots to the top followed by 25 slots (6x5 grid)
             rows = self.capacity // self.columns
-            total_h = rows * self.slot_size + (rows - 1) * self.gap
-            start_y = (screen_h - total_h) // 2
+            inv_h = rows * self.slot_size + rows * self.gap
+            start_y = screen_h - inv_h
 
             i = 0
             for row in range(rows):
