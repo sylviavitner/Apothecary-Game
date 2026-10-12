@@ -3,7 +3,7 @@ from sprite import Sprite
 
 class Button(Sprite):
     def __init__(self, img, x_pos=200, y_pos=600, type="exit", frame=0):
-        super().__init__(img, size=64, num_frames=5, x_pos=x_pos, y_pos=y_pos, scale=3, frame=frame)
+        super().__init__(img, size=64, num_frames=4, x_pos=x_pos, y_pos=y_pos, scale=2, frame=frame)
         self.images = pygame.image.load(img).convert_alpha()
         self.type = type
 
@@ -22,8 +22,8 @@ class Button(Sprite):
                             self.set_frame(2)
                         elif self.frame == 2:
                             self.set_frame(1)
-                    case "edit":
-                        pass
+                    #case "edit":
+                        #pass
                     case "buy":
                         pass
 
