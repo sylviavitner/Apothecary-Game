@@ -1,5 +1,3 @@
-# this will handle sprite interactions, hiding/showing sprites, etc.
-
 import pygame
 
 class Sprite(pygame.sprite.Sprite):
@@ -44,6 +42,12 @@ class Sprite(pygame.sprite.Sprite):
             self.show = False
         else:
             self.show = True
+
+    def detect_collision(self, object):
+        if pygame.sprite.collide_rect(self, object):
+            return True
+        else:
+            return False
 
     def draw(self, screen):
         if self.show:

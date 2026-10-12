@@ -1,5 +1,4 @@
 import pygame
-import random
 from player import Player
 from shop_sprite import ShopSprite
 from background import Background
@@ -26,14 +25,31 @@ shop_sprite = ShopSprite("assets/shop.png")
 background = Background()
 start_screen = StartScreen()
 
-# todo: randomize bush spawns
-bush = Bush("assets/bush.png")
-bush2 = Bush("assets/bush.png", 1400, 800)
-bush3 = Bush("assets/bush.png", 600, 700)
-bushes = pygame.sprite.Group(bush, bush2, bush3)
+# Generate 5 bushes at random positions (close to spawn)
+bushes = pygame.sprite.Group()
+def gen_bush():
+    bush = Bush("assets/bush.png")
+    bush.randomize_position(WIDTH, HEIGHT)
+    collide = False
+    if bushes:
+        for b in bushes:
+            if bush.detect_collision(b):
+                gen_bush()
+                collide=True
+    if bush.detect_collision(shop_sprite) or bush.detect_collision(player):
+        gen_bush()
+        collide=True
+
+    if not collide:
+        bushes.add(bush)
+
+for i in range(5):
+    gen_bush()
 
 # sprites that appear on the map (outside and only of the shop)
-map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2, bush3)
+map_sprites = pygame.sprite.Group(shop_sprite)
+for b in bushes:
+    map_sprites.add(b)
 
 # shop buttons
 exit_button = Button("assets/buttons.png", (WIDTH // 2) - 350, 50, "exit", 0)

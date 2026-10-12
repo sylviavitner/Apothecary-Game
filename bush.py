@@ -13,23 +13,33 @@ class Bush(Sprite):
         self.last_harvested = pygame.time.get_ticks()
         self.berry_cooldown = 30000
 
+    def randomize_position(self, screen_w, screen_h):
+        self.rect.x = randint(-200, screen_w + 200)
+        self.rect.y = randint(-200, screen_h + 200)
+
+    # regrow berries after the cooldown
     def grow_berries(self, current_time):
         if current_time - self.last_harvested >= self.berry_cooldown:
             self.has_berries = True
 
+    # harvest materials and add them to inventory
     def harvest(self, inventory):
         self.can_harvest = False
         self.has_berries = False
         self.set_frame(0)
         self.last_harvested = pygame.time.get_ticks()
-        # for now, creates a new berry and adds to inventory
+
         n = randint(1, 100)
-        # Pick between dropping a red berry or seed
-        if n > 50:
-            item = RedBerry()
-        else:
-            item = Seed()
-        inventory.add(item)
+
+        # always add berry (maybe chance of different colored berry instead?)
+        berry = RedBerry()
+        inventory.add(berry)
+
+        # changed to 1/10 chance of recieving seed in addition to berry
+        if n <= 10:
+            seed = Seed()
+            inventory.add(seed)
+
 
 
 
