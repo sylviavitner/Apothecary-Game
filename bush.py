@@ -1,6 +1,7 @@
 import pygame
+from random import randint
 from sprite import Sprite
-from item import RedBerry
+from item import RedBerry, Seed
 
 class Bush(Sprite):
     def __init__(self, img, x_pos=400, y_pos=600):
@@ -22,8 +23,13 @@ class Bush(Sprite):
         self.set_frame(0)
         self.last_harvested = pygame.time.get_ticks()
         # for now, creates a new berry and adds to inventory
-        berry = RedBerry()
-        inventory.add(berry)
+        n = randint(1, 100)
+        # Pick between dropping a red berry or seed
+        if n > 50:
+            item = RedBerry()
+        else:
+            item = Seed()
+        inventory.add(item)
 
 
 

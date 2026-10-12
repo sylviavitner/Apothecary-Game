@@ -35,9 +35,6 @@ class Player(pygame.sprite.Sprite):
         self.shop_name = ""
         self.max_name_length = 20
 
-        # Material variables
-        self.berry_count = 0
-
     # gets an img from sprite sheet
     def get_image(self, w, h, frame, scale):
         img = pygame.Surface((w, h), pygame.SRCALPHA).convert_alpha()
@@ -131,13 +128,6 @@ class Player(pygame.sprite.Sprite):
                         s.set_frame(2)
                     else:
                         s.set_frame(0)
-
-    def harvest_bush(self, inventory):
-        self.berry_count += 1
-        # add a berry to inventory
-        # eventually split the chance of adding red berry or other items
-
-
 
     def handle_event(self, event, background, shop, m_sprites, inventory):
         # get shop name input
