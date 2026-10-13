@@ -30,3 +30,7 @@ class RedBerry(Item):
 class Seed(Item):
     def __init__(self):
         super().__init__("assets/seed.png", "seed")
+
+class PurpleBerry(Item):
+    def __init__(self):
+        super().__init__("assets/purple_berry.png", "purple_berry")

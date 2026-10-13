@@ -1,7 +1,7 @@
 import pygame
 from random import randint
 from sprite import Sprite
-from item import RedBerry, Seed
+from item import RedBerry, PurpleBerry, Seed
 
 class Bush(Sprite):
     def __init__(self, img, x_pos=400, y_pos=600):
@@ -31,11 +31,15 @@ class Bush(Sprite):
 
         n = randint(1, 100)
 
-        # always add berry (maybe chance of different colored berry instead?)
-        berry = RedBerry()
+        # always add red or purple berry (0.95% and 0.05% chances)
+        if n > 5:
+            berry = RedBerry()
+        else:
+            berry = PurpleBerry()
+
         inventory.add(berry)
 
-        # changed to 1/10 chance of recieving seed in addition to berry
+        # 1/10 chance of recieving seed in addition to berry
         if n <= 10:
             seed = Seed()
             inventory.add(seed)

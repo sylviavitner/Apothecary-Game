@@ -88,7 +88,7 @@ class Player(pygame.sprite.Sprite):
                 self.moving = True   
 
         elif self.inside_shop:  
-            self.rect.x = 200 # maybe change so not a fixed pixel value?idk
+            self.rect.x = screen.get_rect().left + 200
             self.direction = "right"
         
         self.update_frame(current_time)
