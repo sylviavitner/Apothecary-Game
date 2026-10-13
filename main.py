@@ -52,9 +52,9 @@ for b in bushes:
     map_sprites.add(b)
 
 # shop buttons
-exit_button = Button("assets/buttons.png", (WIDTH // 2) - 350, 50, "exit", 0)
-open_close_button = Button("assets/buttons.png", (WIDTH // 2) - 50, 50, "open_close", 1)
-buy_button = Button("assets/buttons.png", (WIDTH // 2) + 250, 50, "buy", 3)
+exit_button = Button("assets/buttons.png", (WIDTH // 2) - 500, 50, "exit", 0)
+open_close_button = Button("assets/buttons.png", (WIDTH // 2) - 100, 50, "open_close", 1)
+buy_button = Button("assets/buttons.png", (WIDTH // 2) + 300, 50, "buy", 3)
 
 # sprites that appear inside the shop (and only inside the shop)
 shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, buy_button)

@@ -83,7 +83,8 @@ class Inventory():
                         # show how many of an item in a slot
                         n = self.font.render(str(slot.quantity), True, (255, 255, 235))
                         n_rect = n.get_rect(bottomright=(slot.rect.right - 4, slot.rect.bottom))
-                        screen.blit(n, n_rect)
+                        if slot.quantity > 1:
+                            screen.blit(n, n_rect)
 
                     i += 1
         else:
