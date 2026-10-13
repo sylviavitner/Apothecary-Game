@@ -26,38 +26,37 @@ background = Background()
 start_screen = StartScreen()
 
 # Generate 5 bushes at random positions (close to spawn)
-bushes = pygame.sprite.Group()
-def gen_bush():
-    bush = Bush("assets/bush.png")
-    bush.randomize_position(WIDTH, HEIGHT)
-    collide = False
-    if bushes:
-        for b in bushes:
-            if bush.detect_collision(b):
-                gen_bush()
-                collide=True
-    if bush.detect_collision(shop_sprite) or bush.detect_collision(player):
-        gen_bush()
-        collide=True
-
-    if not collide:
-        bushes.add(bush)
-
-for i in range(5):
-    gen_bush()
-
-# sprites that appear on the map (outside and only of the shop)
-map_sprites = pygame.sprite.Group(shop_sprite)
-for b in bushes:
-    map_sprites.add(b)
+#bushes = pygame.sprite.Group()
+#def gen_bush():
+    #bush = Bush("assets/bush.png")
+    #bush.randomize_position(WIDTH, HEIGHT)
+    #collide = False
+    #if bushes:
+        #for b in bushes:
+            #if bush.detect_collision(b):
+                #gen_bush()
+                #collide=True
+    #if bush.detect_collision(shop_sprite) or bush.detect_collision(player):
+        #gen_bush()
+        #collide=True
+    #if not collide:
+        #bushes.add(bush)
+#for i in range(5):
+    #gen_bush()
 
 # shop buttons
 exit_button = Button("assets/buttons.png", (WIDTH // 2) - 500, 50, "exit", 0)
 open_close_button = Button("assets/buttons.png", (WIDTH // 2) - 100, 50, "open_close", 1)
 buy_button = Button("assets/buttons.png", (WIDTH // 2) + 300, 50, "buy", 3)
 
-# sprites that appear inside the shop (and only inside the shop)
-shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, buy_button)
+# starting bushes
+bush = Bush("assets/bush.png", shop_sprite.rect.left - 400, shop_sprite.rect.bottom)
+bush2 = Bush("assets/bush.png", shop_sprite.rect.right + 300, shop_sprite.rect.bottom)
+
+# sprite groups (at start)
+bushes = pygame.sprite.Group(bush, bush2)
+map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2) # sprites that appear on the map (outside and only of the shop)
+shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, buy_button) # sprites that appear inside the shop (and only inside the shop)
 
 # inventory
 inventory = Inventory("assets/slot.png")
