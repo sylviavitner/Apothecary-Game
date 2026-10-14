@@ -87,9 +87,9 @@ while run:
             if all_items:
                 for item in all_items:
                     if not player.inside_shop:
-                        map_sprites = item.handle_event(event, inventory, map_sprites)
+                        map_sprites = item.handle_event(event, inventory, map_sprites, all_items)
                     else:
-                        shop_sprite_group = item.handle_event(event, inventory, shop_sprite_group)
+                        shop_sprite_group = item.handle_event(event, inventory, shop_sprite_group, all_items)
             
             
         # inventory events

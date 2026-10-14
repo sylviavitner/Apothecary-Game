@@ -18,7 +18,7 @@ class Item(Sprite):
         self.rect.y = y
 
     # for clicking items and moving them (in or out of inventory/map, swapping slots, brewing, etc.)
-    def handle_event(self, event, inventory, sprites):
+    def handle_event(self, event, inventory, sprites, all_items):
         if event.type != pygame.MOUSEBUTTONDOWN:
             return sprites
 
@@ -29,6 +29,12 @@ class Item(Sprite):
                     self.set_frame(1) # change to interaction frame
             
                 elif self.allow_move:
+                    for item in all_items:
+                        if item.rect.collidepoint(event.pos) and item.inside_inventory:
+                            self.allow_move = False
+                            self.set_frame(0)
+                            return sprites
+                            # will need to swap items in inventory
                     match self.name:
                         case "red_berry":
                             new_item = RedBerry()
@@ -36,7 +42,7 @@ class Item(Sprite):
                             new_item = Seed()
                         case "purple_berry":
                             new_item = PurpleBerry()
-                    new_item.set_position(event.pos[0], event.pos[1])
+                    new_item.set_position(event.pos[0] - self.size, event.pos[1] - self.size)
                     sprites.add(new_item)
                     inventory.remove(self, 1)
                     self.allow_move = False
