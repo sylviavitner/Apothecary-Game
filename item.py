@@ -2,26 +2,46 @@ import pygame
 from sprite import Sprite
 
 class Item(Sprite):
-    def __init__(self, img, name, stack_size=100):
+    def __init__(self, img, name, stack_size=100, inside_inventory=True):
         super().__init__(img, size=32, num_frames=1, x_pos=0, y_pos=0, scale=3)
         self.name = name # red_berry or seed
         self.stack_size = stack_size
-
+        self.inside_inventory = inside_inventory
+        self.slot_index = -1 # -1 for not in inventory, 0-29  for slots
+        self.allow_move = False
+        
     def add_to_item_slot(self, inventory, amount=1):
-        inventory.add(self, amount)
+        self.slot_index = inventory.add(self, amount)
 
     def set_position(self, x, y):
         self.rect.x = x
         self.rect.y = y
 
-    def remove_from_item_slot(self, inventory, amount=1):
-        pass
-        # inventory.remove(self, amount)
-
-
     # for clicking items and moving them (in or out of inventory/map, swapping slots, brewing, etc.)
-    def handle_event(self, event):
-        pass
+    def handle_event(self, event, inventory, sprites):
+        if event.type != pygame.MOUSEBUTTONDOWN:
+            return sprites
+
+        elif event.button == 1:
+            if self.inside_inventory:
+                if self.rect.collidepoint(event.pos):
+                    self.allow_move = True
+            
+                if self.allow_move:
+                    match self.name:
+                        case "red_berry":
+                            new_item = RedBerry()
+                        case "seed":
+                            new_item = Seed()
+                        case "purple_berry":
+                            new_item = PurpleBerry()
+                    new_item.set_position(event.pos[0], event.pos[1])
+                    sprites.add(new_item)
+                    inventory.remove(self, 1)
+                    self.allow_move = False
+                    self.inside_inventory = False
+
+        return sprites
 
 class RedBerry(Item):
     def __init__(self):

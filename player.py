@@ -99,7 +99,7 @@ class Player(pygame.sprite.Sprite):
                 s.set_state(1)
             else:
                 s.set_state(0)
-                
+        
         for s in m_sprites:
             if self.inside_shop:
                 s.set_state(0)
@@ -129,7 +129,7 @@ class Player(pygame.sprite.Sprite):
                     else:
                         s.set_frame(0)
 
-    def handle_event(self, event, background, shop, m_sprites, inventory):
+    def handle_event(self, event, background, shop, m_sprites, inventory, all_items):
         # get shop name input
         if event.type != pygame.KEYDOWN:
             return
@@ -153,7 +153,7 @@ class Player(pygame.sprite.Sprite):
             elif not self.inside_shop and not self.allow_shop_entry:
                 for s in m_sprites:
                     if s.name == "bush" and s.can_harvest:
-                        s.harvest(inventory)
+                        s.harvest(inventory, all_items)
                         
 
     def get_shop_name(self):

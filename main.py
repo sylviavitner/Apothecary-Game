@@ -11,6 +11,8 @@ from item import Item
 pygame.init()
 
 WIDTH, HEIGHT = 1920, 1080
+CENTER_X = WIDTH // 2
+CENTER_Y = HEIGHT // 2
 FPS = 60
 CLOCK = pygame.time.Clock()
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
@@ -45,18 +47,19 @@ start_screen = StartScreen()
     #gen_bush()
 
 # shop buttons
-exit_button = Button("assets/buttons.png", (WIDTH // 2) - 500, 50, "exit", 0)
-open_close_button = Button("assets/buttons.png", (WIDTH // 2) - 100, 50, "open_close", 1)
-buy_button = Button("assets/buttons.png", (WIDTH // 2) + 300, 50, "buy", 3)
+open_close_button = Button("assets/buttons.png", CENTER_X - 64, 50, "open_close", 1) # 64 for size scaled by 2
+exit_button = Button("assets/buttons.png", open_close_button.rect.x - (open_close_button.size*2) - 128, 50, "exit", 0)
+buy_button = Button("assets/buttons.png", open_close_button.rect.right + 128, 50, "buy", 3)
 
 # starting bushes
-bush = Bush("assets/bush.png", shop_sprite.rect.left - 400, shop_sprite.rect.bottom)
-bush2 = Bush("assets/bush.png", shop_sprite.rect.right + 300, shop_sprite.rect.bottom)
+bush = Bush("assets/bush.png", CENTER_X - 384, CENTER_Y - 100)
+bush2 = Bush("assets/bush.png", CENTER_X + 224, CENTER_Y - 100)
 
 # sprite groups (at start)
 bushes = pygame.sprite.Group(bush, bush2)
 map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2) # sprites that appear on the map (outside and only of the shop)
 shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, buy_button) # sprites that appear inside the shop (and only inside the shop)
+all_items = pygame.sprite.Group()
 
 # inventory
 inventory = Inventory("assets/slot.png")
@@ -72,12 +75,25 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         # player events
-        player.handle_event(event, background, shop_sprite, map_sprites, inventory)
-        # shop events
-        for button in shop_sprite_group:
-            button.handle_event(event, player, background, shop_sprite)
+        player.handle_event(event, background, shop_sprite, map_sprites, inventory, all_items)
+        # mouse clicks
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # shop button events
+            for button in shop_sprite_group:
+                button.handle_event(event, player, background, shop_sprite)
+
+            # update item positions (inventory, map, and shop)
+            if all_items:
+                for item in all_items:
+                    if not player.inside_shop:
+                        map_sprites = item.handle_event(event, inventory, map_sprites)
+                    else:
+                        shop_sprite_group = item.handle_event(event, inventory, shop_sprite_group)
+            
+            
         # inventory events
         inventory.handle_event(event)
+        
 
     # fill bg
     SCREEN.fill(background.current_bg)

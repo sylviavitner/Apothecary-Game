@@ -23,7 +23,7 @@ class Bush(Sprite):
             self.has_berries = True
 
     # harvest materials and add them to inventory
-    def harvest(self, inventory):
+    def harvest(self, inventory, all_items):
         self.can_harvest = False
         self.has_berries = False
         self.set_frame(0)
@@ -38,11 +38,13 @@ class Bush(Sprite):
             berry = PurpleBerry()
 
         inventory.add(berry)
+        all_items.add(berry)
 
         # 1/10 chance of recieving seed in addition to berry
         if n <= 10:
             seed = Seed()
             inventory.add(seed)
+            all_items.add(seed)
 
 
 

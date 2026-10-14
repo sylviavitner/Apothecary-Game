@@ -46,10 +46,18 @@ class Inventory():
                     return self.add(item, amount - item.stack_size)
                 else:
                     slot.quantity = amount
-                    return
+                    return 
                 
     def remove(self, item, amount=1):
-        pass
+        item_slot = self.slots[item.slot_index]
+        if not item_slot.item or amount > item_slot.quantity:
+            return
+        # reduce quantity by amount and reset slot if quantity = 0
+        item_slot.quantity -= amount
+        if item_slot.quantity == 0:
+            item_slot.item = None
+        
+        
 
     # when i is pressed, toggle inventory on/off
     def handle_event(self, event):
