@@ -16,6 +16,7 @@ class Button(Sprite):
                 match self.type:
                     case "exit":
                         player.inside_shop = False
+                        player.rect.center = player.map_position
                         background.set_state(0)
                         shop.set_state(0)
                     case "open_close":

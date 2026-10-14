@@ -11,6 +11,7 @@ class Player(pygame.sprite.Sprite):
             "right": pygame.image.load(img).convert_alpha(),
             "left": pygame.transform.flip(pygame.image.load(img).convert_alpha(), True, False) # flip img for going left
         }
+        self.size = 32
         self.num_frames = 4
         self.moving = False
         self.direction = "right"
@@ -19,7 +20,8 @@ class Player(pygame.sprite.Sprite):
         self.frames_list = self.get_frames()
         self.frame_cooldown = 250
         self.rect = self.frames_list[0].get_rect()
-        self.rect.center = screen.get_rect().center # center sprite instead
+        self.map_position = screen.get_rect().center # center sprite
+        self.rect.center = self.map_position
         self.frame = 0
         self.image = self.frames_list[self.frame]
         self.last_update = pygame.time.get_ticks()
@@ -50,7 +52,7 @@ class Player(pygame.sprite.Sprite):
         frames = []
         for i in range(self.num_frames):
             self.direction = "right"
-            frame = self.get_image(32, 32, i, self.scale)
+            frame = self.get_image(self.size, self.size, i, self.scale)
             frames.append(frame)
         return frames
 
@@ -77,23 +79,39 @@ class Player(pygame.sprite.Sprite):
         self.moving = False
         self.dx = 0
         self.dy = 0
-        if not self.shop_input_active and not self.inside_shop:
-            self.rect.center = screen.get_rect().center
+        if not self.shop_input_active:
+            if not self.inside_shop:
+                self.rect.center = screen.get_rect().center
             # movement
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 self.direction = "right"
-                self.dx += 1
                 self.moving = True
+                if self.inside_shop and self.rect.x < screen.get_rect().width - (self.size*self.scale):
+                    self.rect.x += 1 * self.speed
+                else:
+                    self.dx += 1
+
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 self.direction = "left"
-                self.dx -= 1
                 self.moving = True
+                if self.inside_shop and self.rect.x > 0:
+                    self.rect.x -= 1 * self.speed
+                else:
+                    self.dx -= 1
+                    
             if keys[pygame.K_UP] or keys[pygame.K_w]:
-                self.dy -= 1
                 self.moving = True
+                if self.inside_shop and self.rect.y > 0:
+                    self.rect.y -= 1 * self.speed
+                else:
+                    self.dy -= 1
+    
             if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                self.dy += 1
-                self.moving = True   
+                if self.inside_shop and self.rect.y < screen.get_rect().height - (self.size*self.scale):
+                    self.rect.y += 1 * self.speed
+                else:
+                    self.dy += 1
+                    self.moving = True   
 
         # todo: change movement inside shop
         elif self.inside_shop:  
