@@ -38,8 +38,9 @@ class Inventory():
                     return
 
         # go to next available slot
-        for slot in self.slots:
+        for i, slot in enumerate(self.slots):
             if slot.item == None:
+                item.slot_index = i # set slot index for removal
                 slot.item = item
                 if item.stack_size < amount:
                     slot.quantity = item.stack_size
