@@ -3,8 +3,8 @@ from sprite import Sprite
 
 class Item(Sprite):
     def __init__(self, img, name, stack_size=100, inside_inventory=True):
-        super().__init__(img, size=32, num_frames=1, x_pos=0, y_pos=0, scale=3)
-        self.name = name # red_berry or seed
+        super().__init__(img, size=32, num_frames=2, x_pos=0, y_pos=0, scale=3)
+        self.name = name # red_berry, seed, or purple_berry
         self.stack_size = stack_size
         self.inside_inventory = inside_inventory
         self.slot_index = -1 # -1 for not in inventory, 0-29  for slots
@@ -26,6 +26,7 @@ class Item(Sprite):
             if self.inside_inventory:
                 if self.rect.collidepoint(event.pos):
                     self.allow_move = True
+                    self.set_frame(1) # change to interaction frame
             
                 elif self.allow_move:
                     match self.name:
@@ -39,6 +40,7 @@ class Item(Sprite):
                     sprites.add(new_item)
                     inventory.remove(self, 1)
                     self.allow_move = False
+                    self.set_frame(0) # set back to original frame
 
         return sprites
 
