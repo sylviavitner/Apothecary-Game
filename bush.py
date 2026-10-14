@@ -31,8 +31,8 @@ class Bush(Sprite):
 
         n = randint(1, 100)
 
-        # always add red or purple berry (0.95% and 0.05% chances)
-        if n > 5:
+        # always add red or purple berry (0.95% and 0.05% chances) (temp: 1/2)
+        if n > 50:
             berry = RedBerry()
         else:
             berry = PurpleBerry()
@@ -40,8 +40,8 @@ class Bush(Sprite):
         inventory.add(berry)
         all_items.add(berry)
 
-        # 1/10 chance of recieving seed in addition to berry
-        if n <= 10:
+        # 1/10 chance of recieving seed in addition to berry (temp: 1/2)
+        if n <= 50:
             seed = Seed()
             inventory.add(seed)
             all_items.add(seed)

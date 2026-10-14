@@ -8,10 +8,12 @@ class Item(Sprite):
         self.stack_size = stack_size
         self.inside_inventory = inside_inventory
         self.slot_index = -1 # -1 for not in inventory, 0-29  for slots
-        self.allow_move = False
+        self.allow_click_to_move = False
+        self.allow_pickup = False
         
     def add_to_item_slot(self, inventory, amount=1):
         self.slot_index = inventory.add(self, amount)
+        self.inside_inventory = True
 
     def set_position(self, x, y):
         self.rect.x = x
@@ -25,13 +27,17 @@ class Item(Sprite):
         elif event.button == 1:
             if self.inside_inventory:
                 if self.rect.collidepoint(event.pos):
-                    self.allow_move = True
-                    self.set_frame(1) # change to interaction frame
+                    if not self.allow_click_to_move:
+                        self.allow_click_to_move = True
+                        self.set_frame(1) # change to interaction frame
+                    else:
+                        self.allow_click_to_move = False
+                        self.set_frame(0)
             
-                elif self.allow_move:
+                elif self.allow_click_to_move:
                     for item in all_items:
                         if item.rect.collidepoint(event.pos) and item.inside_inventory:
-                            self.allow_move = False
+                            self.allow_click_to_move = False
                             self.set_frame(0)
                             return sprites
                             # will need to swap items in inventory
@@ -45,7 +51,7 @@ class Item(Sprite):
                     new_item.set_position(event.pos[0] - self.size, event.pos[1] - self.size)
                     sprites.add(new_item)
                     inventory.remove(self, 1)
-                    self.allow_move = False
+                    self.allow_click_to_move = False
                     self.set_frame(0) # set back to original frame
 
         return sprites

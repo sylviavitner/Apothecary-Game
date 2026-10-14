@@ -6,6 +6,7 @@ class Button(Sprite):
         super().__init__(img, size=64, num_frames=4, x_pos=x_pos, y_pos=y_pos, scale=2, frame=frame)
         self.images = pygame.image.load(img).convert_alpha()
         self.type = type
+        self.name = "button"
 
     def handle_event(self, event, player, background, shop):
         if event.type != pygame.MOUSEBUTTONDOWN:

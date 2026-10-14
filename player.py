@@ -27,6 +27,7 @@ class Player(pygame.sprite.Sprite):
         # other sprites on map move by -dx, -dy * player speed
         self.dx = 0
         self.dy = 0
+        self.obtainable_items = ["red_berry", "seed", "purple_berry"]
 
         # Shop variables
         self.allow_shop_entry = False
@@ -97,39 +98,51 @@ class Player(pygame.sprite.Sprite):
         for s in s_sprites:
             if self.inside_shop:
                 s.set_state(1)
+                if pygame.sprite.collide_rect(self, s):
+                    if s.name in self.obtainable_items:
+                        s.set_frame(1)
+                        s.allow_pickup = True
+                elif s.name in self.obtainable_items:
+                    s.set_frame(0)
+                    s.allow_pickup = False
             else:
                 s.set_state(0)
         
         for s in m_sprites:
             if self.inside_shop:
                 s.set_state(0)
-                return
             else:
                 s.set_state(1)
+                # allow shop entry when interacting with shop sprite
+                if s.name == "shop":
+                    if pygame.sprite.collide_rect(self, s):
+                        self.allow_shop_entry = True
+                        s.set_frame(1)
+                    else:
+                        self.allow_shop_entry = False
+                        s.set_frame(0)
+                # allow harvest when interacting with bush sprite
+                if s.name == "bush":
+                    if pygame.sprite.collide_rect(self, s):
+                        if s.has_berries:
+                            s.set_frame(3)
+                            s.can_harvest = True
+                    else:
+                        s.can_harvest = False
+                        if s.has_berries:
+                            s.set_frame(2)
+                        else:
+                            s.set_frame(0)
 
-            # allow shop entry when interacting with shop sprite
-            if s.name == "shop":
-                if pygame.sprite.collide_rect(self, s):
-                    self.allow_shop_entry = True
-                    s.set_frame(1)
-                else:
-                    self.allow_shop_entry = False
-                    s.set_frame(0)
-
-            # allow harvest when interacting with bush sprite
-            if s.name == "bush":
-                if pygame.sprite.collide_rect(self, s):
-                    if s.has_berries:
-                        s.set_frame(3)
-                        s.can_harvest = True
-                else:
-                    s.can_harvest = False
-                    if s.has_berries:
-                        s.set_frame(2)
+                if s.name in self.obtainable_items:
+                    if pygame.sprite.collide_rect(self, s):
+                        s.set_frame(1)
+                        s.allow_pickup = True
                     else:
                         s.set_frame(0)
+                        s.allow_pickup = False
 
-    def handle_event(self, event, background, shop, m_sprites, inventory, all_items):
+    def handle_event(self, event, background, shop, m_sprites, s_sprites, inventory, all_items):
         # get shop name input
         if event.type != pygame.KEYDOWN:
             return
@@ -148,12 +161,30 @@ class Player(pygame.sprite.Sprite):
             if not self.inside_shop and self.allow_shop_entry:
                 self.inside_shop = True
                 background.set_state(1) # changes color
+                # collisions with sprites on map (outside of shop)
                 for s in m_sprites:
                     s.set_state(0) # hide all map sprites
             elif not self.inside_shop and not self.allow_shop_entry:
                 for s in m_sprites:
                     if s.name == "bush" and s.can_harvest:
                         s.harvest(inventory, all_items)
+                    # for item pickup
+                    if s.name in self.obtainable_items and s.allow_pickup:
+                        s.set_frame(0)
+                        s.allow_pickup = False
+                        s.add_to_item_slot(inventory, 1)
+                        m_sprites.remove(s)
+                        
+            # collisions with sprites in shop
+            elif self.inside_shop:
+                for s in s_sprites:
+                    if s.name in self.obtainable_items and s.allow_pickup:
+                        s.set_frame(0)
+                        s.allow_pickup = False
+                        s.add_to_item_slot(inventory, 1)
+                        m_sprites.remove(s)
+                        
+            
                         
 
     def get_shop_name(self):

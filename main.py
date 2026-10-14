@@ -52,8 +52,8 @@ exit_button = Button("assets/buttons.png", open_close_button.rect.x - (open_clos
 buy_button = Button("assets/buttons.png", open_close_button.rect.right + 128, 50, "buy", 3)
 
 # starting bushes
-bush = Bush("assets/bush.png", CENTER_X - 384, CENTER_Y - 100)
-bush2 = Bush("assets/bush.png", CENTER_X + 224, CENTER_Y - 100)
+bush = Bush("assets/bush.png", CENTER_X - 384, CENTER_Y - 50)
+bush2 = Bush("assets/bush.png", CENTER_X + 224, CENTER_Y - 50)
 
 # sprite groups (at start)
 bushes = pygame.sprite.Group(bush, bush2)
@@ -76,7 +76,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         # player events
-        player.handle_event(event, background, shop_sprite, map_sprites, inventory, all_items)
+        player.handle_event(event, background, shop_sprite, map_sprites, shop_sprite_group, inventory, all_items)
         # mouse clicks
         if event.type == pygame.MOUSEBUTTONDOWN:
             # shop button events
