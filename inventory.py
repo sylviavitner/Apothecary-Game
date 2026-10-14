@@ -58,7 +58,6 @@ class Inventory():
         if item_slot.quantity == 0:
             item_slot.item.kill()
             item_slot.item = None
-            item.slot_index 
         
         
 

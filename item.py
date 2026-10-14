@@ -11,15 +11,23 @@ class Item(Sprite):
         self.allow_click_to_move = False
         self.allow_pickup = False
         
-    def add_to_item_slot(self, inventory, amount=1):
-        self.slot_index = inventory.add(self, amount)
-        self.inside_inventory = True
+    def add_to_inventory(self, inventory, amount=1):
+        match self.name:
+            case "red_berry":
+                item = RedBerry()
+            case "seed":
+                item = Seed()
+            case "purple_berry":
+                item = PurpleBerry()
+
+        inventory.add(item, amount)
+        return item
 
     def set_position(self, x, y):
         self.rect.x = x
         self.rect.y = y
 
-    # for clicking items and moving them (in or out of inventory/map, swapping slots, brewing, etc.)
+    # for clicking items and moving them (in or out of inventory/map)
     def handle_event(self, event, inventory, sprites, all_items):
         if event.type != pygame.MOUSEBUTTONDOWN:
             return sprites

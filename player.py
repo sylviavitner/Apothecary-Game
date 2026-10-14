@@ -23,6 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.frame = 0
         self.image = self.frames_list[self.frame]
         self.last_update = pygame.time.get_ticks()
+        
         # to keep track of player movement relative to other objects.
         # other sprites on map move by -dx, -dy * player speed
         self.dx = 0
@@ -36,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.shop_name = ""
         self.max_name_length = 20
 
+
     # gets an img from sprite sheet
     def get_image(self, w, h, frame, scale):
         img = pygame.Surface((w, h), pygame.SRCALPHA).convert_alpha()
@@ -43,6 +45,7 @@ class Player(pygame.sprite.Sprite):
         img = pygame.transform.scale(img, (w * scale, h * scale))
         return img
 
+    # puts the individual frames in a list
     def get_frames(self):
         frames = []
         for i in range(self.num_frames):
@@ -51,6 +54,7 @@ class Player(pygame.sprite.Sprite):
             frames.append(frame)
         return frames
 
+    # update the animation frame when the player mpves
     def update_frame(self, current_time):
         if self.moving:
             if current_time - self.last_update >= self.frame_cooldown:
@@ -60,11 +64,14 @@ class Player(pygame.sprite.Sprite):
                     self.frame = 0
         else:
             self.frame = 0
+
         self.image = self.frames_list[self.frame]
+
         # update image to face left
         if self.direction == "left":
             self.image = pygame.transform.flip(self.image, True, False)
 
+    # detect key presses and change dx/dy to simulate player movement
     def move(self, current_time, screen): # eventually list of sprites instead of just shop
         keys = pygame.key.get_pressed()
         self.moving = False
@@ -88,12 +95,14 @@ class Player(pygame.sprite.Sprite):
                 self.dy += 1
                 self.moving = True   
 
+        # todo: change movement inside shop
         elif self.inside_shop:  
             self.rect.x = screen.get_rect().left + 200
             self.direction = "right"
         
         self.update_frame(current_time)
 
+    # checks for collision between player and other sprites
     def check_collisions(self, m_sprites, s_sprites):
         for s in s_sprites:
             if self.inside_shop:
@@ -142,6 +151,7 @@ class Player(pygame.sprite.Sprite):
                         s.set_frame(0)
                         s.allow_pickup = False
 
+    # handle events and interactions with other sprites
     def handle_event(self, event, background, shop, m_sprites, s_sprites, inventory, all_items):
         # get shop name input
         if event.type != pygame.KEYDOWN:
@@ -172,8 +182,9 @@ class Player(pygame.sprite.Sprite):
                     if s.name in self.obtainable_items and s.allow_pickup:
                         s.set_frame(0)
                         s.allow_pickup = False
-                        s.add_to_item_slot(inventory, 1)
-                        m_sprites.remove(s)
+                        item = s.add_to_inventory(inventory)
+                        all_items.add(item)
+                        s.kill()
                         
             # collisions with sprites in shop
             elif self.inside_shop:
@@ -181,12 +192,10 @@ class Player(pygame.sprite.Sprite):
                     if s.name in self.obtainable_items and s.allow_pickup:
                         s.set_frame(0)
                         s.allow_pickup = False
-                        s.add_to_item_slot(inventory, 1)
-                        m_sprites.remove(s)
+                        item = s.add_to_inventory(inventory)
+                        all_items.add(item)
+                        s.kill()
                         
-            
-                        
-
     def get_shop_name(self):
         self.shop_input_active = True
 
