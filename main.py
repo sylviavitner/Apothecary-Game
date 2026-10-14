@@ -57,6 +57,7 @@ bush2 = Bush("assets/bush.png", CENTER_X + 224, CENTER_Y - 100)
 
 # sprite groups (at start)
 bushes = pygame.sprite.Group(bush, bush2)
+buttons = pygame.sprite.Group(open_close_button, exit_button, buy_button)
 map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2) # sprites that appear on the map (outside and only of the shop)
 shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, buy_button) # sprites that appear inside the shop (and only inside the shop)
 all_items = pygame.sprite.Group()
@@ -79,7 +80,7 @@ while run:
         # mouse clicks
         if event.type == pygame.MOUSEBUTTONDOWN:
             # shop button events
-            for button in shop_sprite_group:
+            for button in buttons:
                 button.handle_event(event, player, background, shop_sprite)
 
             # update item positions (inventory, map, and shop)

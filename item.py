@@ -27,7 +27,7 @@ class Item(Sprite):
                 if self.rect.collidepoint(event.pos):
                     self.allow_move = True
             
-                if self.allow_move:
+                elif self.allow_move:
                     match self.name:
                         case "red_berry":
                             new_item = RedBerry()
@@ -39,7 +39,6 @@ class Item(Sprite):
                     sprites.add(new_item)
                     inventory.remove(self, 1)
                     self.allow_move = False
-                    self.inside_inventory = False
 
         return sprites
 
