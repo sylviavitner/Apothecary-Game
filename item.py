@@ -10,6 +10,7 @@ class Item(Sprite):
         self.slot_index = -1 # -1 for not in inventory, 0-29  for slots
         self.allow_click_to_move = False
         self.allow_pickup = False
+        self.time_placed = None
         
     def add_to_inventory(self, inventory, amount=1):
         match self.name:
@@ -28,7 +29,8 @@ class Item(Sprite):
         self.rect.y = y
 
     # for clicking items and moving them (in or out of inventory/map)
-    def handle_event(self, event, inventory, sprites, all_items):
+    def handle_event(self, event, inventory, sprites, growables, all_items):
+
         if event.type != pygame.MOUSEBUTTONDOWN:
             return sprites
 
@@ -56,9 +58,16 @@ class Item(Sprite):
                             new_item = Seed()
                         case "purple_berry":
                             new_item = PurpleBerry()
+                    # to track time for seeds and other future items that rely on time to grow
+                    new_item.inside_inventory = False
+                    new_item.time_placed = pygame.time.get_ticks()
                     new_item.set_position(event.pos[0] - self.size, event.pos[1] - self.size)
                     sprites.add(new_item)
                     inventory.remove(self, 1)
+
+                    if new_item.name == "seed":
+                        growables.add(new_item)
+                    
                     self.allow_click_to_move = False
                     self.set_frame(0) # set back to original frame
 
@@ -68,9 +77,23 @@ class RedBerry(Item):
     def __init__(self):
         super().__init__("assets/red_berry.png", "red_berry")
 
+import bush
+
 class Seed(Item):
+
     def __init__(self):
         super().__init__("assets/seed.png", "seed")
+        self.cooldown = 3000
+
+    def grow_bush(self, current_time):
+        if not self.inside_inventory and current_time - self.time_placed >= self.cooldown:
+            b = bush.Bush("assets/bush.png", self.rect.x - self.size, self.rect.y - self.size)
+            b.last_harvested = current_time
+            b.has_berries = False
+            b.can_harvest = False
+            b.set_frame(0)
+            return b
+        return None
 
 class PurpleBerry(Item):
     def __init__(self):

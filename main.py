@@ -61,6 +61,7 @@ buttons = pygame.sprite.Group(open_close_button, exit_button, buy_button)
 map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2) # sprites that appear on the map (outside and only of the shop)
 shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, buy_button) # sprites that appear inside the shop (and only inside the shop)
 all_items = pygame.sprite.Group()
+growables = pygame.sprite.Group()
 
 # inventory
 inventory = Inventory("assets/slot.png")
@@ -87,9 +88,9 @@ while run:
             if all_items:
                 for item in all_items:
                     if not player.inside_shop:
-                        map_sprites = item.handle_event(event, inventory, map_sprites, all_items)
+                        map_sprites = item.handle_event(event, inventory, map_sprites, growables, all_items)
                     else:
-                        shop_sprite_group = item.handle_event(event, inventory, shop_sprite_group, all_items)
+                        shop_sprite_group = item.handle_event(event, inventory, shop_sprite_group, growables, all_items)
             
             
         # inventory events
@@ -104,13 +105,25 @@ while run:
         start_screen.draw(SCREEN, player, current_time)
 
     else:
+
         # check player collisions and move player
         player.check_collisions(map_sprites, shop_sprite_group)
         player.move(current_time, SCREEN)
+
         # grow berries after cooldown
         for b in bushes:
             b.grow_berries(current_time)
-   
+
+        # grow growable items after a cooldown
+        if growables:
+            for g in growables:
+                b = g.grow_bush(current_time)
+                if b:
+                    bushes.add(b)
+                    map_sprites.add(b)
+                    g.kill()
+
+
         # move sprites opposite of player
         for sprite in map_sprites:
             sprite.move(-player.dx * player.speed, -player.dy * player.speed)
@@ -120,13 +133,20 @@ while run:
             sprite.draw(SCREEN)
 
         for sprite in shop_sprite_group:
-            sprite.draw(SCREEN)
+            if sprite.name == "button":
+                continue
+            else:
+                sprite.draw(SCREEN)
 
         # draw player
         player.draw(SCREEN)
 
         # draw inventory
         inventory.draw(SCREEN)
+
+        # draw buttons last
+        for b in buttons:
+            b.draw(SCREEN)
 
     pygame.display.flip()
 
