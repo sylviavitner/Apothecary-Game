@@ -2,8 +2,8 @@ import pygame
 from sprite import Sprite
 
 class Item(Sprite):
-    def __init__(self, img, name, stack_size=100, inside_inventory=True):
-        super().__init__(img, size=32, num_frames=2, x_pos=0, y_pos=0, scale=3)
+    def __init__(self, img, name, stack_size=100, inside_inventory=True, size=32):
+        super().__init__(img, size, num_frames=2, x_pos=0, y_pos=0, scale=3)
         self.name = name # red_berry, seed, or purple_berry
         self.stack_size = stack_size
         self.inside_inventory = inside_inventory

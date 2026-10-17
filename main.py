@@ -7,6 +7,7 @@ from bush import Bush
 from button import Button
 from inventory import Inventory
 from item import Item
+from shop_screen import ShopScreen
 
 pygame.init()
 
@@ -26,6 +27,7 @@ player = Player("assets/player.png", SCREEN)
 shop_sprite = ShopSprite("assets/shop.png")
 background = Background()
 start_screen = StartScreen()
+shop_screen = ShopScreen("assets/shop_screen.png", SCREEN)
 
 # Generate 5 bushes at random positions (close to spawn)
 #bushes = pygame.sprite.Group()
@@ -82,7 +84,7 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             # shop button events
             for button in buttons:
-                button.handle_event(event, player, background, shop_sprite)
+                button.handle_event(event, player, background, shop_sprite, shop_screen)
 
             # update item positions (inventory, map, and shop)
             if all_items:
@@ -143,6 +145,9 @@ while run:
 
         # draw inventory
         inventory.draw(SCREEN)
+
+        # shop screen (if visible)
+        shop_screen.draw(SCREEN)
 
         # draw buttons last
         for b in buttons:

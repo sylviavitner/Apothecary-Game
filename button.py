@@ -8,7 +8,7 @@ class Button(Sprite):
         self.type = type
         self.name = "button"
 
-    def handle_event(self, event, player, background, shop):
+    def handle_event(self, event, player, background, shop, shop_screen):
         if event.type != pygame.MOUSEBUTTONDOWN:
             return
         elif event.button == 1: # left mouse click
@@ -27,7 +27,9 @@ class Button(Sprite):
                     #case "edit":
                         #pass
                     case "buy":
-                        pass
+                        shop_screen.show = not shop_screen.show
+
+
 
 
 
