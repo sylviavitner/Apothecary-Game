@@ -8,12 +8,13 @@ class Button(Sprite):
         self.images = pygame.image.load(img).convert_alpha()
         self.type = type
         self.name = "button"
+        self.show = False
 
     def handle_event(self, event, player, background, shop, shop_screen, inventory, all_items):
         if event.type != pygame.MOUSEBUTTONDOWN:
             return
         elif event.button == 1: # left mouse click
-            if self.rect.collidepoint(event.pos) and self.show:
+            if self.show and self.rect.collidepoint(event.pos):
                 match self.type:
                     case "exit":
                         player.inside_shop = False
@@ -32,8 +33,8 @@ class Button(Sprite):
                     case "item_stand":
                         # implement coin logic here too
                         item_stand = ItemStand()
-                        item_stand.add_to_inventory(inventory)
-                        all_items.add(item_stand)
+                        all_items.add(item_stand.add_to_inventory(inventory))
+                       
 
 
 

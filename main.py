@@ -95,7 +95,6 @@ while run:
                     else:
                         shop_sprite_group = item.handle_event(event, inventory, shop_sprite_group, growables, all_items)
             
-            
         # inventory events
         inventory.handle_event(event)
         

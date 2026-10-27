@@ -112,4 +112,5 @@ class ItemStand(Item):
         self.rect.y = y
         self.market_price = 50 # shop price and reccomended selling price
         self.name = "item_stand"
+        self.type = "item_stand"
         self.item = None
