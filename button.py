@@ -32,8 +32,10 @@ class Button(Sprite):
                         shop_screen.show = not shop_screen.show
                     case "item_stand":
                         # implement coin logic here too
-                        item_stand = ItemStand(inside_inventory=True)
-                        all_items.add(item_stand.add_to_inventory(inventory))
+                        if player.coins >= 50: # to fix
+                            item_stand = ItemStand(inside_inventory=True)
+                            all_items.add(item_stand.add_to_inventory(inventory))
+                            player.coins -= 50
                        
 
 

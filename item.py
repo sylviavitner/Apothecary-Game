@@ -112,5 +112,16 @@ class ItemStand(Item):
         self.rect.y = y
         self.market_price = 50 # shop price and reccomended selling price
         self.name = "item_stand"
-        self.type = "item_stand"
         self.item = None
+        self.quantity = 0
+        self.font = pygame.font.SysFont("opensans", 20)
+
+    def prompt_user(self):
+        pass
+
+    def add_item(self):
+        pass
+
+    def remove_item(self):
+        pass
+

@@ -12,6 +12,3 @@ class StartScreen():
         text = self.font.render(f"Enter shop name: {player.shop_name}{cursor}", True, (255, 255, 235))
         rect = text.get_rect(center=screen.get_rect().center)
         screen.blit(text, rect)
-
-
-        

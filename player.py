@@ -35,9 +35,13 @@ class Player(pygame.sprite.Sprite):
         # Shop variables
         self.allow_shop_entry = False
         self.inside_shop = False
-        self.shop_input_active = True # change to True when done debugging
+        self.shop_input_active = True
         self.shop_name = ""
         self.max_name_length = 20
+
+        # coins
+        self.coins = 50
+        self.font = pygame.font.SysFont("opensans", 36)
 
 
     # gets an img from sprite sheet
@@ -220,4 +224,7 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
-
+        # also display player coins
+        text = self.font.render(f"{self.coins} coins", True, (255, 255, 235))
+        rect = text.get_rect(topleft=(50, 50))
+        screen.blit(text, rect)
