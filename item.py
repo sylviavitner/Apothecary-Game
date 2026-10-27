@@ -4,7 +4,7 @@ from sprite import Sprite
 class Item(Sprite):
     def __init__(self, img, name, stack_size=100, inside_inventory=True, size=32):
         super().__init__(img, size, num_frames=2, x_pos=0, y_pos=0, scale=3)
-        self.name = name # red_berry, seed, or purple_berry
+        self.name = name # red_berry, seed, purple_berry, item_stand
         self.stack_size = stack_size
         self.inside_inventory = inside_inventory
         self.slot_index = -1 # -1 for not in inventory, 0-29  for slots
@@ -20,6 +20,8 @@ class Item(Sprite):
                 item = Seed()
             case "purple_berry":
                 item = PurpleBerry()
+            case "item_stand":
+                item = ItemStand()
 
         inventory.add(item, amount)
         return item
@@ -58,6 +60,8 @@ class Item(Sprite):
                             new_item = Seed()
                         case "purple_berry":
                             new_item = PurpleBerry()
+                        case "item_stand":
+                            new_item = ItemStand()
                     # to track time for seeds and other future items that rely on time to grow
                     new_item.inside_inventory = False
                     new_item.time_placed = pygame.time.get_ticks()
@@ -98,3 +102,14 @@ class Seed(Item):
 class PurpleBerry(Item):
     def __init__(self):
         super().__init__("assets/purple_berry.png", "purple_berry")
+
+
+class ItemStand(Item):
+    def __init__(self, size=32, x=0, y=0, inside_inventory=False):
+        super().__init__("assets/item_stand.png", "item_stand", stack_size=1, inside_inventory=inside_inventory, size=size)
+        self.stack_size = 1
+        self.rect.x = x
+        self.rect.y = y
+        self.market_price = 50 # shop price and reccomended selling price
+        self.name = "item_stand"
+        self.item = None

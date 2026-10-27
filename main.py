@@ -6,8 +6,7 @@ from start_screen import StartScreen
 from bush import Bush
 from button import Button
 from inventory import Inventory
-from item import Item
-from shop_screen import ShopScreen
+from shop_window import ShopWindow
 
 pygame.init()
 
@@ -27,7 +26,7 @@ player = Player("assets/player.png", SCREEN)
 shop_sprite = ShopSprite("assets/shop.png")
 background = Background()
 start_screen = StartScreen()
-shop_screen = ShopScreen("assets/shop_screen.png", SCREEN)
+shop_window = ShopWindow("assets/shop_screen.png", SCREEN)
 
 # Generate 5 bushes at random positions (close to spawn)
 #bushes = pygame.sprite.Group()
@@ -59,7 +58,7 @@ bush2 = Bush("assets/bush.png", CENTER_X + 224, CENTER_Y - 50)
 
 # sprite groups (at start)
 bushes = pygame.sprite.Group(bush, bush2)
-buttons = pygame.sprite.Group(open_close_button, exit_button, buy_button)
+shop_buttons = pygame.sprite.Group(open_close_button, exit_button, buy_button)
 map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2) # sprites that appear on the map (outside and only of the shop)
 shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, buy_button) # sprites that appear inside the shop (and only inside the shop)
 all_items = pygame.sprite.Group()
@@ -83,8 +82,10 @@ while run:
         # mouse clicks
         if event.type == pygame.MOUSEBUTTONDOWN:
             # shop button events
-            for button in buttons:
-                button.handle_event(event, player, background, shop_sprite, shop_screen)
+            for button in shop_buttons:
+                button.handle_event(event, player, background, shop_sprite, shop_window, inventory, all_items)
+            for button in shop_window.buttons:
+                button.handle_event(event, player, background, shop_sprite, shop_window, inventory, all_items)
 
             # update item positions (inventory, map, and shop)
             if all_items:
@@ -147,10 +148,10 @@ while run:
         inventory.draw(SCREEN)
 
         # shop screen (if visible)
-        shop_screen.draw(SCREEN)
+        shop_window.draw(SCREEN, player)
 
         # draw buttons last
-        for b in buttons:
+        for b in shop_buttons:
             b.draw(SCREEN)
 
     pygame.display.flip()
