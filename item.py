@@ -21,7 +21,7 @@ class Item(Sprite):
             case "purple_berry":
                 item = PurpleBerry()
             case "item_stand":
-                item = ItemStand()
+                item = ItemStand(inside_inventory=True)
 
         inventory.add(item, amount)
         return item
