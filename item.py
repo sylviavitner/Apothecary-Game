@@ -53,6 +53,8 @@ class Item(Sprite):
                             self.set_frame(0)
                             return sprites
                             # will need to swap items in inventory
+
+                    # Placing items from inventory onto map (or shop)
                     match self.name:
                         case "red_berry":
                             new_item = RedBerry()
@@ -62,7 +64,6 @@ class Item(Sprite):
                             new_item = PurpleBerry()
                         case "item_stand":
                             new_item = ItemStand()
-                    # to track time for seeds and other future items that rely on time to grow
                     new_item.inside_inventory = False
                     new_item.time_placed = pygame.time.get_ticks()
                     new_item.set_position(event.pos[0] - self.size, event.pos[1] - self.size)
@@ -119,9 +120,19 @@ class ItemStand(Item):
     def prompt_user(self):
         pass
 
-    def add_item(self):
-        pass
+    def add_item(self, item, quantity=1):
+        self.item = item
+        self.quantity += quantity
+        self.item.rect.x = self.rect.x - self.item.size
+        self.item.rect.y = self.rect.y - self.item.size
+        return self.item
 
     def remove_item(self):
         pass
+
+    def draw(self, screen):
+        if self.show:
+            screen.blit(self.image, (self.rect.x, self.rect.y))
+        if self.item:
+            self.item.draw(screen)
 

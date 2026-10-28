@@ -40,7 +40,7 @@ class Player(pygame.sprite.Sprite):
         self.max_name_length = 20
 
         # coins
-        self.coins = 50
+        self.coins = 150
         self.font = pygame.font.SysFont("opensans", 36)
 
 
@@ -198,25 +198,49 @@ class Player(pygame.sprite.Sprite):
                     s.set_state(0) # hide all map sprites
             elif not self.inside_shop and not self.allow_shop_entry:
                 for s in m_sprites:
+
+                    # harvest bush when player presses e
                     if s.name == "bush" and s.can_harvest:
                         s.harvest(inventory, all_items)
-                    # for item pickup
-                    if s.name in self.obtainable_items and s.allow_pickup:
-                        s.set_frame(0)
-                        s.allow_pickup = False
-                        item = s.add_to_inventory(inventory)
-                        all_items.add(item)
-                        s.kill()
+
+                    # for item pickup / interaction (from map)
+                    elif s.name in self.obtainable_items and s.allow_pickup:
+                        if s.name == "item_stand":
+                            if s.item != None:
+                                pass # don't allow interaction when there's already an item on it (for now)
+                            else:
+                                if inventory.slots[0].item:
+                                    item = s.add_item(inventory.slots[0].item) # first item in inventory goes on stand
+                                    m_sprites.add(item)
+                                    s.prompt_user()
+                        else:
+                            s.set_frame(0)
+                            s.allow_pickup = False
+                            item = s.add_to_inventory(inventory)
+                            all_items.add(item)
+                            s.kill()
                         
-            # collisions with sprites in shop
+            # collisions with sprites when inside shop
             elif self.inside_shop:
                 for s in s_sprites:
                     if s.name in self.obtainable_items and s.allow_pickup:
-                        s.set_frame(0)
-                        s.allow_pickup = False
-                        item = s.add_to_inventory(inventory)
-                        all_items.add(item)
-                        s.kill()
+                        # item stand interactions
+                        if s.name == "item_stand":
+                            if s.item != None:
+                                pass
+                            else:
+                                if inventory.slots[0].item:
+                                    item = s.add_item(inventory.slots[0].item) 
+                                    s_sprites.add(item)
+                                    s.prompt_user()
+
+                        # items that are picked up normally
+                        else:
+                            s.set_frame(0)
+                            s.allow_pickup = False
+                            item = s.add_to_inventory(inventory)
+                            all_items.add(item)
+                            s.kill()
                         
     def get_shop_name(self):
         self.shop_input_active = True
