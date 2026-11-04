@@ -86,6 +86,7 @@ class Item(Sprite):
 class RedBerry(Item):
     def __init__(self):
         super().__init__("assets/red_berry.png", "red_berry")
+        self.market_price = 10
 
 import bush
 
@@ -95,6 +96,7 @@ class Seed(Item):
     def __init__(self):
         super().__init__("assets/seed.png", "seed")
         self.cooldown = 3000
+        self.market_price = 15
 
     def grow_bush(self, current_time):
         if not self.inside_inventory and current_time - self.time_placed >= self.cooldown:
@@ -111,6 +113,7 @@ class Seed(Item):
 class PurpleBerry(Item):
     def __init__(self):
         super().__init__("assets/purple_berry.png", "purple_berry")
+        self.market_price = 25
 
 # item stand
 class ItemStand(Item):
@@ -123,10 +126,19 @@ class ItemStand(Item):
         self.name = "item_stand"
         self.item = None
         self.quantity = 0
+        self.price_per_unit = 0
         self.font = pygame.font.SysFont("opensans", 20)
+        self.prompt_active = False
+        self.price_text = ""
+        self.text_x = 0
+        self.text_y = 0
 
     def prompt_user(self):
-        pass
+        self.prompt_active = True
+        self.quantity_text = self.font.render(f"Quantity: {self.quantity}", True, (255, 255, 235))
+        self.price_text = self.font.render(f"Price: {self.price_per_unit}_      *Market value: {self.item.market_price}*", True, (255, 255, 235))
+        self.text_x = self.rect.x
+        self.text_y = self.rect.y - (self.size * self.scale)
 
     def add_item(self, to_add, quantity=1):
         if to_add:
@@ -145,4 +157,7 @@ class ItemStand(Item):
     def draw(self, screen):
         if self.show:
             screen.blit(self.image, (self.rect.x, self.rect.y))
+            if self.prompt_active:
+                screen.blit(self.price_text, (self.text_x, self.text_y))
+                screen.blit(self.quantity_text, (self.text_x, self.text_y + 25))
 

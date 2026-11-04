@@ -6,8 +6,7 @@ class StartScreen():
         self.start = True
         self.name_submitted = False
 
-    def draw(self, screen, player, current_time):
-        # blinking cursor for input screen
+    def draw(self, screen, player):
         cursor = "_"
         text = self.font.render(f"Enter shop name: {player.shop_name}{cursor}", True, (255, 255, 235))
         rect = text.get_rect(center=screen.get_rect().center)

@@ -90,7 +90,7 @@ while run:
 
     # before the game starts display the shop screen
     if player.shop_input_active:
-        start_screen.draw(SCREEN, player, current_time)
+        start_screen.draw(SCREEN, player)
 
     else:
 
@@ -105,11 +105,12 @@ while run:
         # grow growable items after a cooldown (seeds to bush)
         if growables:
             for g in growables:
-                b = g.grow_bush(current_time)
-                if b:
-                    bushes.add(b)
-                    map_sprites.add(b)
-                    g.kill()
+                if g in map_sprites:
+                    b = g.grow_bush(current_time)
+                    if b:
+                        bushes.add(b)
+                        map_sprites.add(b)
+                        g.kill()
 
 
         # move map sprites opposite of player
