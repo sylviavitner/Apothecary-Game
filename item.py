@@ -39,6 +39,13 @@ class Item(Sprite):
     # for clicking items and moving them (in or out of inventory/map)
     def handle_event(self, event, inventory, sprites, growables, all_items):
 
+        # for getting input for item stand price and quantity
+        if event.type == pygame.KEYDOWN:
+            if self.name != "item_stand":
+                return sprites
+            else:
+                self.handle_text_input(event)
+
         if event.type != pygame.MOUSEBUTTONDOWN:
             return sprites
 
@@ -129,16 +136,36 @@ class ItemStand(Item):
         self.price_per_unit = 0
         self.font = pygame.font.SysFont("opensans", 20)
         self.prompt_active = False
+        self.price_input_active = False
+        self.quantity_input_active = False
         self.price_text = ""
         self.text_x = 0
         self.text_y = 0
 
+    def handle_text_input(self, event):
+        if not self.prompt_active:
+            return
+        if event.key == pygame.K_BACKSPACE:
+            if self.price_input_active:
+                self.price_per_unit = self.price_per_unit[:-1]
+            elif self.quantity_input_active:
+                self.quantity = self.quantity[:-1]
+        elif event.key == pygame.K_RETURN:
+            if self.price_input_active:
+                self.price_input_active = False
+                self.quantity_input_active = True
+            elif self.quantity_input_active:
+                self.quantity_input_active = False
+                self.prompt_active = False
+        elif event.text.is_digit():
+            if self.price_input_active:
+                self.price_per_unit += event.unicode
+            elif self.quantity_input_active:
+                self.quantity += event.unicode
+
     def prompt_user(self):
         self.prompt_active = True
-        self.quantity_text = self.font.render(f"Quantity: {self.quantity}", True, (255, 255, 235))
-        self.price_text = self.font.render(f"Price: {self.price_per_unit}_      *Market value: {self.item.market_price}*", True, (255, 255, 235))
-        self.text_x = self.rect.x
-        self.text_y = self.rect.y - (self.size * self.scale)
+        self.price_input_active = True
 
     def add_item(self, to_add, quantity=1):
         if to_add:
@@ -157,7 +184,11 @@ class ItemStand(Item):
     def draw(self, screen):
         if self.show:
             screen.blit(self.image, (self.rect.x, self.rect.y))
-            if self.prompt_active:
+            if self.item:
+                self.quantity_text = self.font.render(f"Quantity: {self.quantity}", True, (255, 255, 235))
+                self.price_text = self.font.render(f"Price: {self.price_per_unit}      *Market value: {self.item.market_price}*", True, (255, 255, 235))
+                self.text_x = self.rect.x
+                self.text_y = self.rect.y - (self.size * self.scale)
                 screen.blit(self.price_text, (self.text_x, self.text_y))
                 screen.blit(self.quantity_text, (self.text_x, self.text_y + 25))
 

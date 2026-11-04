@@ -184,7 +184,7 @@ class Player(pygame.sprite.Sprite):
 
     def place_on_stand(self, item_stand, inventory, sprites, all_items):
         to_add = self.find_first_sellable(inventory)
-        if to_add is None:
+        if to_add is None or not self.inside_shop: # no stands outside of shop (text issues)
             return
         item = item_stand.add_item(to_add)
         inventory.remove(to_add, 1)
@@ -197,6 +197,7 @@ class Player(pygame.sprite.Sprite):
         # get shop name input
         if event.type != pygame.KEYDOWN:
             return
+        
         if self.shop_input_active:
             if event.key == pygame.K_BACKSPACE:
                 self.shop_name = self.shop_name[:-1]
