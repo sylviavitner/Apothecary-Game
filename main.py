@@ -64,23 +64,22 @@ while run:
         # player events
         player.handle_event(event, background, shop, map_sprites, shop_sprites, inventory, all_items)
 
-        # mouse click events
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # shop button events
-            for button in shop_buttons:
-                button.handle_event(event, player, background, shop, shop_window, inventory, all_items)
-            # shop window buttons (buying window inside shop)
-            for button in shop_window.buttons:
-                button.handle_event(event, player, background, shop, shop_window, inventory, all_items)
-            # update items and item positions
-            if all_items:
-                for item in all_items:
-                    # update map sprite group when outside of shop
-                    if not player.inside_shop:
-                        map_sprites = item.handle_event(event, inventory, map_sprites, growables, all_items)
-                    else:
-                        # update shop sprite group when inside the shop
-                        shop_sprites = item.handle_event(event, inventory, shop_sprites, growables, all_items)
+    
+        # shop button events
+        for button in shop_buttons:
+            button.handle_event(event, player, background, shop, shop_window, inventory, all_items)
+        # shop window buttons (buying window inside shop)
+        for button in shop_window.buttons:
+            button.handle_event(event, player, background, shop, shop_window, inventory, all_items)
+        # update items and item positions
+        if all_items:
+            for item in all_items:
+                # update map sprite group when outside of shop
+                if not player.inside_shop:
+                    map_sprites = item.handle_event(event, inventory, map_sprites, growables, all_items)
+                else:
+                    # update shop sprite group when inside the shop
+                    shop_sprites = item.handle_event(event, inventory, shop_sprites, growables, all_items)
             
         # inventory events
         inventory.handle_event(event)

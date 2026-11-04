@@ -58,7 +58,19 @@ class Inventory():
         if item_slot.quantity == 0:
             item_slot.item.kill()
             item_slot.item = None
-        
+
+    def remove_item_by_name(self, item_name, amount=1):
+        for slot in self.slots:
+            if slot.item and slot.item.name == item_name:
+                self.remove(slot.item, amount)
+                return
+
+    def get_item_quantity(self, item_name):
+        count = 0
+        for slot in self.slots:
+            if slot.item and slot.item.name == item_name:
+                count += slot.quantity
+        return count
         
 
     # when i is pressed, toggle inventory on/off

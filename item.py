@@ -44,7 +44,7 @@ class Item(Sprite):
             if self.name != "item_stand":
                 return sprites
             else:
-                self.handle_text_input(event)
+                self.handle_text_input(event, inventory)
 
         if event.type != pygame.MOUSEBUTTONDOWN:
             return sprites
@@ -138,13 +138,15 @@ class ItemStand(Item):
         self.prompt_active = False
         self.price_input_active = False
         self.quantity_input_active = False
-        self.price_text = ""
-        self.text_x = 0
-        self.text_y = 0
 
-    def handle_text_input(self, event):
+    def handle_text_input(self, event, inventory):
         if not self.prompt_active:
             return
+
+        # cast to string for input handling
+        self.price_per_unit = str(self.price_per_unit)
+        self.quantity = str(self.quantity)
+
         if event.key == pygame.K_BACKSPACE:
             if self.price_input_active:
                 self.price_per_unit = self.price_per_unit[:-1]
@@ -153,11 +155,21 @@ class ItemStand(Item):
         elif event.key == pygame.K_RETURN:
             if self.price_input_active:
                 self.price_input_active = False
+                if not self.price_per_unit:
+                    self.price_per_unit = 0
+                self.price_per_unit = int(self.price_per_unit) # back to int
                 self.quantity_input_active = True
             elif self.quantity_input_active:
                 self.quantity_input_active = False
+                if not self.quantity:
+                    self.quantity = 1
+                self.quantity = int(self.quantity) # back to int
+                if self.quantity > inventory.get_item_quantity(self.item.name) + 1 or self.quantity <= 0:
+                    self.quantity = 1
+                else:
+                    inventory.remove_item_by_name(self.item.name, amount=self.quantity - 1) # already removed 1
                 self.prompt_active = False
-        elif event.text.is_digit():
+        elif event.unicode.isdigit():
             if self.price_input_active:
                 self.price_per_unit += event.unicode
             elif self.quantity_input_active:
@@ -185,10 +197,21 @@ class ItemStand(Item):
         if self.show:
             screen.blit(self.image, (self.rect.x, self.rect.y))
             if self.item:
-                self.quantity_text = self.font.render(f"Quantity: {self.quantity}", True, (255, 255, 235))
-                self.price_text = self.font.render(f"Price: {self.price_per_unit}      *Market value: {self.item.market_price}*", True, (255, 255, 235))
-                self.text_x = self.rect.x
-                self.text_y = self.rect.y - (self.size * self.scale)
-                screen.blit(self.price_text, (self.text_x, self.text_y))
-                screen.blit(self.quantity_text, (self.text_x, self.text_y + 25))
+                current_time = pygame.time.get_ticks()
+                cursor = "_" if (current_time // 500) % 2 == 0 else ""
+                if self.price_input_active:
+                    ppu_string = f"{self.price_per_unit}{cursor}"
+                    q_string = f"{self.quantity}"
+                elif self.quantity_input_active:
+                    ppu_string = f"{self.price_per_unit}"
+                    q_string = f"{self.quantity}{cursor}"
+                else:
+                    ppu_string = f"{self.price_per_unit}"
+                    q_string = f"{self.quantity}"
+                quantity_text = self.font.render(f"Quantity: {q_string}", True, (255, 255, 235))
+                price_text = self.font.render(f"Price: {ppu_string}", True, (255, 255, 235))
+                text_x = self.rect.x
+                text_y = self.rect.y - (self.size * self.scale)
+                screen.blit(price_text, (text_x, text_y))
+                screen.blit(quantity_text, (text_x, text_y + 25))
 
