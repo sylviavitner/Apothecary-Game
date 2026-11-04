@@ -23,29 +23,10 @@ pygame.display.set_caption("Apothecary Shop Sim")
 
 # initialize sprites
 player = Player("assets/player.png", SCREEN)
-shop_sprite = ShopSprite("assets/shop.png")
+shop = ShopSprite("assets/shop.png")
 background = Background()
 start_screen = StartScreen()
 shop_window = ShopWindow("assets/shop_screen.png", SCREEN)
-
-# Generate 5 bushes at random positions (close to spawn)
-#bushes = pygame.sprite.Group()
-#def gen_bush():
-    #bush = Bush("assets/bush.png")
-    #bush.randomize_position(WIDTH, HEIGHT)
-    #collide = False
-    #if bushes:
-        #for b in bushes:
-            #if bush.detect_collision(b):
-                #gen_bush()
-                #collide=True
-    #if bush.detect_collision(shop_sprite) or bush.detect_collision(player):
-        #gen_bush()
-        #collide=True
-    #if not collide:
-        #bushes.add(bush)
-#for i in range(5):
-    #gen_bush()
 
 # shop buttons
 open_close_button = Button("assets/buttons.png", CENTER_X - 64, 50, "open_close", 1) # 64 for size scaled by 2
@@ -59,13 +40,15 @@ bush2 = Bush("assets/bush.png", CENTER_X + 224, CENTER_Y - 50)
 # sprite groups (at start)
 bushes = pygame.sprite.Group(bush, bush2)
 shop_buttons = pygame.sprite.Group(open_close_button, exit_button, buy_button)
-map_sprites = pygame.sprite.Group(shop_sprite, bush, bush2) # sprites that appear on the map (outside and only of the shop)
-shop_sprite_group = pygame.sprite.Group(exit_button, open_close_button, buy_button) # sprites that appear inside the shop (and only inside the shop)
+map_sprites = pygame.sprite.Group(shop, bush, bush2) # sprites that appear on the map (outside and only of the shop)
+shop_sprites = pygame.sprite.Group(exit_button, open_close_button, buy_button) # sprites that appear inside the shop (and only inside the shop)
 all_items = pygame.sprite.Group()
 growables = pygame.sprite.Group()
 
 # inventory
 inventory = Inventory("assets/slot.png")
+
+###### MAIN GAME LOOP
 
 run = True
 while run:
@@ -77,46 +60,49 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
         # player events
-        player.handle_event(event, background, shop_sprite, map_sprites, shop_sprite_group, inventory, all_items)
-        # mouse clicks
+        player.handle_event(event, background, shop, map_sprites, shop_sprites, inventory, all_items)
+
+        # mouse click events
         if event.type == pygame.MOUSEBUTTONDOWN:
             # shop button events
             for button in shop_buttons:
-                button.handle_event(event, player, background, shop_sprite, shop_window, inventory, all_items)
+                button.handle_event(event, player, background, shop, shop_window, inventory, all_items)
+            # shop window buttons (buying window inside shop)
             for button in shop_window.buttons:
-                button.handle_event(event, player, background, shop_sprite, shop_window, inventory, all_items)
-
-            # update item positions (inventory, map, and shop)
+                button.handle_event(event, player, background, shop, shop_window, inventory, all_items)
+            # update items and item positions
             if all_items:
                 for item in all_items:
+                    # update map sprite group when outside of shop
                     if not player.inside_shop:
                         map_sprites = item.handle_event(event, inventory, map_sprites, growables, all_items)
                     else:
-                        shop_sprite_group = item.handle_event(event, inventory, shop_sprite_group, growables, all_items)
+                        # update shop sprite group when inside the shop
+                        shop_sprites = item.handle_event(event, inventory, shop_sprites, growables, all_items)
             
         # inventory events
         inventory.handle_event(event)
-        
 
-    # fill bg
+    # fill bg to current color
     SCREEN.fill(background.current_bg)
 
-    # before the game starts
+    # before the game starts display the shop screen
     if player.shop_input_active:
         start_screen.draw(SCREEN, player, current_time)
 
     else:
 
         # check player collisions and move player
-        player.check_collisions(map_sprites, shop_sprite_group)
+        player.check_collisions(map_sprites, shop_sprites)
         player.move(current_time, SCREEN)
 
         # grow berries after cooldown
         for b in bushes:
             b.grow_berries(current_time)
 
-        # grow growable items after a cooldown
+        # grow growable items after a cooldown (seeds to bush)
         if growables:
             for g in growables:
                 b = g.grow_bush(current_time)
@@ -126,15 +112,16 @@ while run:
                     g.kill()
 
 
-        # move sprites opposite of player
+        # move map sprites opposite of player
         for sprite in map_sprites:
             sprite.move(-player.dx * player.speed, -player.dy * player.speed)
 
-        # draw sprites
+        # draw sprites (on map)
         for sprite in map_sprites:
             sprite.draw(SCREEN)
 
-        for sprite in shop_sprite_group:
+        # draw sprites (in shop)
+        for sprite in shop_sprites:
             if sprite.name == "button":
                 continue
             else:
@@ -146,7 +133,7 @@ while run:
         # draw inventory
         inventory.draw(SCREEN)
 
-        # shop screen (if visible)
+        # draw shop screen
         shop_window.draw(SCREEN, player)
 
         # draw buttons last

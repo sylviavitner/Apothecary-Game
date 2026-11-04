@@ -14,6 +14,7 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.y = y_pos
         self.image = self.frames_list[self.frame]
         self.show = True
+        self.for_sale = False
        
     def get_image(self, frame, scale):
         img = pygame.Surface((self.size, self.size), pygame.SRCALPHA).convert_alpha()

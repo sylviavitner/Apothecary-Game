@@ -126,18 +126,20 @@ class Player(pygame.sprite.Sprite):
 
     # checks for collision between player and other sprites
     def check_collisions(self, m_sprites, s_sprites):
+
+        # check for collisions with shop sprites
         for s in s_sprites:
             if self.inside_shop:
                 s.set_state(1)
                 if pygame.sprite.collide_rect(self, s):
-                    if s.name in self.obtainable_items:
+                    if s.name in self.obtainable_items and not s.for_sale: # added check for sale
                         s.set_frame(1)
                         s.allow_pickup = True
                 elif s.name in self.obtainable_items:
                     s.set_frame(0)
                     s.allow_pickup = False
             else:
-                s.set_state(0)
+                s.set_state(0) # only visible inside shop
         
         for s in m_sprites:
             if self.inside_shop:
@@ -165,13 +167,30 @@ class Player(pygame.sprite.Sprite):
                         else:
                             s.set_frame(0)
 
-                if s.name in self.obtainable_items:
+                # set frame for interactions with items
+                if s.name in self.obtainable_items and not s.for_sale:
                     if pygame.sprite.collide_rect(self, s):
                         s.set_frame(1)
                         s.allow_pickup = True
                     else:
                         s.set_frame(0)
                         s.allow_pickup = False
+
+    def find_first_sellable(self, inventory):
+        for slot in inventory.slots:
+            if slot.item and slot.item.name != "item_stand":
+                return slot.item
+        return None
+
+    def place_on_stand(self, item_stand, inventory, sprites, all_items):
+        to_add = self.find_first_sellable(inventory)
+        if to_add is None:
+            return
+        item = item_stand.add_item(to_add)
+        inventory.remove(to_add, 1)
+        sprites.add(item)
+        all_items.add(item)
+        item_stand.prompt_user()
 
     # handle events and interactions with other sprites
     def handle_event(self, event, background, shop, m_sprites, s_sprites, inventory, all_items):
@@ -203,16 +222,14 @@ class Player(pygame.sprite.Sprite):
                     if s.name == "bush" and s.can_harvest:
                         s.harvest(inventory, all_items)
 
+                    elif s.for_sale:
+                        pass
+
                     # for item pickup / interaction (from map)
                     elif s.name in self.obtainable_items and s.allow_pickup:
                         if s.name == "item_stand":
-                            if s.item != None:
-                                pass # don't allow interaction when there's already an item on it (for now)
-                            else:
-                                if inventory.slots[0].item:
-                                    item = s.add_item(inventory.slots[0].item) # first item in inventory goes on stand
-                                    m_sprites.add(item)
-                                    s.prompt_user()
+                            if s.item is None:
+                                self.place_on_stand(s, inventory, m_sprites, all_items)
                         else:
                             s.set_frame(0)
                             s.allow_pickup = False
@@ -223,16 +240,14 @@ class Player(pygame.sprite.Sprite):
             # collisions with sprites when inside shop
             elif self.inside_shop:
                 for s in s_sprites:
-                    if s.name in self.obtainable_items and s.allow_pickup:
+                    if s.for_sale:
+                        pass # for now ignore items on stands
+                    elif s.name in self.obtainable_items and s.allow_pickup:
+                        
                         # item stand interactions
                         if s.name == "item_stand":
-                            if s.item != None:
-                                pass
-                            else:
-                                if inventory.slots[0].item:
-                                    item = s.add_item(inventory.slots[0].item) 
-                                    s_sprites.add(item)
-                                    s.prompt_user()
+                            if s.item is None:
+                                self.place_on_stand(s, inventory, s_sprites, all_items)
 
                         # items that are picked up normally
                         else:

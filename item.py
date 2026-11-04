@@ -10,22 +10,28 @@ class Item(Sprite):
         self.slot_index = -1 # -1 for not in inventory, 0-29  for slots
         self.allow_click_to_move = False
         self.allow_pickup = False
-        self.time_placed = None
-        
-    def add_to_inventory(self, inventory, amount=1):
+        #self.for_sale = False
+
+    def make_copy(self):
         match self.name:
             case "red_berry":
-                item = RedBerry()
+                return RedBerry()
             case "seed":
-                item = Seed()
+                return Seed()
             case "purple_berry":
-                item = PurpleBerry()
+                return PurpleBerry()
             case "item_stand":
-                item = ItemStand(inside_inventory=True)
+                if self.inside_inventory:
+                    return ItemStand(inside_inventory=True)
+                return ItemStand(inside_inventory=False)
 
+    # creates a new instance of the item and adds the amount to inventory
+    def add_to_inventory(self, inventory, amount=1):
+        item = self.make_copy()
         inventory.add(item, amount)
         return item
 
+    # set x and y coords of item
     def set_position(self, x, y):
         self.rect.x = x
         self.rect.y = y
@@ -36,16 +42,21 @@ class Item(Sprite):
         if event.type != pygame.MOUSEBUTTONDOWN:
             return sprites
 
+        # left click
         elif event.button == 1:
+
+            # moving an item inside inventory
             if self.inside_inventory:
+                # toggle allow click to move and interaction frame
                 if self.rect.collidepoint(event.pos):
                     if not self.allow_click_to_move:
                         self.allow_click_to_move = True
-                        self.set_frame(1) # change to interaction frame
+                        self.set_frame(1)
                     else:
                         self.allow_click_to_move = False
                         self.set_frame(0)
-            
+
+                # if an item is clicked
                 elif self.allow_click_to_move:
                     for item in all_items:
                         if item.rect.collidepoint(event.pos) and item.inside_inventory:
@@ -55,19 +66,12 @@ class Item(Sprite):
                             # will need to swap items in inventory
 
                     # Placing items from inventory onto map (or shop)
-                    match self.name:
-                        case "red_berry":
-                            new_item = RedBerry()
-                        case "seed":
-                            new_item = Seed()
-                        case "purple_berry":
-                            new_item = PurpleBerry()
-                        case "item_stand":
-                            new_item = ItemStand()
+                    new_item = self.make_copy()
                     new_item.inside_inventory = False
                     new_item.time_placed = pygame.time.get_ticks()
                     new_item.set_position(event.pos[0] - self.size, event.pos[1] - self.size)
                     sprites.add(new_item)
+                    all_items.add(new_item)
                     inventory.remove(self, 1)
 
                     if new_item.name == "seed":
@@ -78,12 +82,14 @@ class Item(Sprite):
 
         return sprites
 
+# red berry
 class RedBerry(Item):
     def __init__(self):
         super().__init__("assets/red_berry.png", "red_berry")
 
 import bush
 
+# seed
 class Seed(Item):
 
     def __init__(self):
@@ -100,11 +106,13 @@ class Seed(Item):
             return b
         return None
 
+
+# purple berry
 class PurpleBerry(Item):
     def __init__(self):
         super().__init__("assets/purple_berry.png", "purple_berry")
 
-
+# item stand
 class ItemStand(Item):
     def __init__(self, size=32, x=0, y=0, inside_inventory=False):
         super().__init__("assets/item_stand.png", "item_stand", stack_size=1, inside_inventory=inside_inventory, size=size)
@@ -120,12 +128,16 @@ class ItemStand(Item):
     def prompt_user(self):
         pass
 
-    def add_item(self, item, quantity=1):
-        self.item = item
-        self.quantity += quantity
-        self.item.rect.x = self.rect.x - self.item.size
-        self.item.rect.y = self.rect.y - self.item.size
-        return self.item
+    def add_item(self, to_add, quantity=1):
+        if to_add:
+            item = to_add.make_copy()
+            item.inside_inventory = False
+            item.for_sale = True
+            item.allow_pickup = False
+            item.set_position(self.rect.x, self.rect.y - (item.size * item.scale // 2))
+            self.item = item
+            self.quantity += quantity
+            return self.item
 
     def remove_item(self):
         pass
@@ -133,6 +145,4 @@ class ItemStand(Item):
     def draw(self, screen):
         if self.show:
             screen.blit(self.image, (self.rect.x, self.rect.y))
-        if self.item:
-            self.item.draw(screen)
 
