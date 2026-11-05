@@ -37,14 +37,14 @@ class Item(Sprite):
         self.rect.y = y
 
     # for clicking items and moving them (in or out of inventory/map)
-    def handle_event(self, event, inventory, sprites, growables, all_items):
+    def handle_event(self, event, inventory, player, sprites, growables, all_items):
 
         # for getting input for item stand price and quantity
         if event.type == pygame.KEYDOWN:
             if self.name != "item_stand":
                 return sprites
             else:
-                self.handle_text_input(event, inventory)
+                self.handle_text_input(event, inventory, player, all_items)
 
         if event.type != pygame.MOUSEBUTTONDOWN:
             return sprites
@@ -139,7 +139,7 @@ class ItemStand(Item):
         self.price_input_active = False
         self.quantity_input_active = False
 
-    def handle_text_input(self, event, inventory):
+    def handle_text_input(self, event, inventory, player, all_items):
         if not self.prompt_active:
             return
 
@@ -168,8 +168,11 @@ class ItemStand(Item):
                 if not self.quantity:
                     self.quantity = 1
                 self.quantity = int(self.quantity) # back to int
-                if self.quantity > inventory.get_item_quantity(self.item.name) + 1 or self.quantity <= 0:
+                if self.quantity > inventory.get_item_quantity(self.item.name) + 1:
                     self.quantity = 1
+                elif self.quantity == 0:
+                    player.pickup_item(self.item, inventory, all_items)
+                    self.clear()
                 else:
                     inventory.remove_item_by_name(self.item.name, amount=self.quantity - 1) # already removed 1
                 

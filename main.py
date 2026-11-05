@@ -76,10 +76,10 @@ while run:
             for item in all_items:
                 # update map sprite group when outside of shop
                 if not player.inside_shop:
-                    map_sprites = item.handle_event(event, inventory, map_sprites, growables, all_items)
+                    map_sprites = item.handle_event(event, inventory, player, map_sprites, growables, all_items)
                 else:
                     # update shop sprite group when inside the shop
-                    shop_sprites = item.handle_event(event, inventory, shop_sprites, growables, all_items)
+                    shop_sprites = item.handle_event(event, inventory, player, shop_sprites, growables, all_items)
             
         # inventory events
         inventory.handle_event(event)

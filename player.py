@@ -117,7 +117,6 @@ class Player(pygame.sprite.Sprite):
                     self.dy += 1
                     self.moving = True   
 
-        # todo: change movement inside shop
         elif self.inside_shop:  
             self.rect.x = screen.get_rect().left + 200
             self.direction = "right"
@@ -192,11 +191,11 @@ class Player(pygame.sprite.Sprite):
         all_items.add(item)
         item_stand.prompt_user()
 
-    def pickup_item(self, s, inventory, all_items):
+    def pickup_item(self, s, inventory, all_items, amount=1):
         s.set_frame(0)
         s.allow_pickup = False
         s.inside_inventory = True # in case for item stands
-        item = s.add_to_inventory(inventory)
+        item = s.add_to_inventory(inventory, amount)
         all_items.add(item)
         s.kill()
 
@@ -262,7 +261,7 @@ class Player(pygame.sprite.Sprite):
                 elif s.name in self.obtainable_items and s.allow_pickup:
                     # clear item stand and return items to inventory
                     if s.name == "item_stand" and s.item:
-                        self.pickup_item(s.item, inventory, all_items)
+                        self.pickup_item(s.item, inventory, all_items, amount=s.quantity)
                         s.clear()
                     elif s.name == "item_stand":
                         s.inside_inventory = True # todo: fix later
