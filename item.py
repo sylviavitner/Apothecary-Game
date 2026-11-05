@@ -146,19 +146,23 @@ class ItemStand(Item):
         # cast to string for input handling
         self.price_per_unit = str(self.price_per_unit)
         self.quantity = str(self.quantity)
+        self.start_quantity = self.quantity
 
         if event.key == pygame.K_BACKSPACE:
             if self.price_input_active:
                 self.price_per_unit = self.price_per_unit[:-1]
             elif self.quantity_input_active:
                 self.quantity = self.quantity[:-1]
+
         elif event.key == pygame.K_RETURN:
+            # get price input
             if self.price_input_active:
                 self.price_input_active = False
                 if not self.price_per_unit:
                     self.price_per_unit = 0
                 self.price_per_unit = int(self.price_per_unit) # back to int
                 self.quantity_input_active = True
+            # get quantity input
             elif self.quantity_input_active:
                 self.quantity_input_active = False
                 if not self.quantity:
@@ -168,7 +172,9 @@ class ItemStand(Item):
                     self.quantity = 1
                 else:
                     inventory.remove_item_by_name(self.item.name, amount=self.quantity - 1) # already removed 1
+                
                 self.prompt_active = False
+
         elif event.unicode.isdigit():
             if self.price_input_active:
                 self.price_per_unit += event.unicode
@@ -190,15 +196,24 @@ class ItemStand(Item):
             self.quantity += quantity
             return self.item
 
-    def remove_item(self):
-        pass
+    def clear(self):
+        self.item = None
+        self.quantity = 0
+        self.price_per_unit = 0
+        self.prompt_active = False
+        self.price_input_active = False
+        self.quantity_input_active = False
 
     def draw(self, screen):
         if self.show:
             screen.blit(self.image, (self.rect.x, self.rect.y))
+
+            # draw item and text above
             if self.item:
+
                 current_time = pygame.time.get_ticks()
                 cursor = "_" if (current_time // 500) % 2 == 0 else ""
+
                 if self.price_input_active:
                     ppu_string = f"{self.price_per_unit}{cursor}"
                     q_string = f"{self.quantity}"
@@ -207,9 +222,16 @@ class ItemStand(Item):
                     q_string = f"{self.quantity}{cursor}"
                 else:
                     ppu_string = f"{self.price_per_unit}"
-                    q_string = f"{self.quantity}"
+                    q_string = f"{self.quantity}"    
+
                 quantity_text = self.font.render(f"Quantity: {q_string}", True, (255, 255, 235))
                 price_text = self.font.render(f"Price: {ppu_string}", True, (255, 255, 235))
+
+                # when input is submitted change opacity :)
+                if not self.prompt_active:
+                    quantity_text.set_alpha(127)
+                    price_text.set_alpha(127)
+
                 text_x = self.rect.x
                 text_y = self.rect.y - (self.size * self.scale)
                 screen.blit(price_text, (text_x, text_y))

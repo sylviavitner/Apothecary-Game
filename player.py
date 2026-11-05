@@ -192,6 +192,14 @@ class Player(pygame.sprite.Sprite):
         all_items.add(item)
         item_stand.prompt_user()
 
+    def pickup_item(self, s, inventory, all_items):
+        s.set_frame(0)
+        s.allow_pickup = False
+        s.inside_inventory = True # in case for item stands
+        item = s.add_to_inventory(inventory)
+        all_items.add(item)
+        s.kill()
+
     # handle events and interactions with other sprites
     def handle_event(self, event, background, shop, m_sprites, s_sprites, inventory, all_items):
         # get shop name input
@@ -227,16 +235,9 @@ class Player(pygame.sprite.Sprite):
                         pass
 
                     # for item pickup / interaction (from map)
+                    # changed to allow for normal item stand pickup when outside shop
                     elif s.name in self.obtainable_items and s.allow_pickup:
-                        if s.name == "item_stand":
-                            if s.item is None:
-                                self.place_on_stand(s, inventory, m_sprites, all_items)
-                        else:
-                            s.set_frame(0)
-                            s.allow_pickup = False
-                            item = s.add_to_inventory(inventory)
-                            all_items.add(item)
-                            s.kill()
+                        self.pickup_item(s, inventory, all_items)
                         
             # collisions with sprites when inside shop
             elif self.inside_shop:
@@ -252,11 +253,22 @@ class Player(pygame.sprite.Sprite):
 
                         # items that are picked up normally
                         else:
-                            s.set_frame(0)
-                            s.allow_pickup = False
-                            item = s.add_to_inventory(inventory)
-                            all_items.add(item)
-                            s.kill()
+                            self.pickup_item(s, inventory, all_items)
+
+        elif event.key == pygame.K_x: # X will remove items and item stands and add to inventory
+            for s in all_items:
+                if s.for_sale:
+                    pass
+                elif s.name in self.obtainable_items and s.allow_pickup:
+                    # clear item stand and return items to inventory
+                    if s.name == "item_stand" and s.item:
+                        self.pickup_item(s.item, inventory, all_items)
+                        s.clear()
+                    elif s.name == "item_stand":
+                        s.inside_inventory = True # todo: fix later
+                        self.pickup_item(s, inventory, all_items)
+                    else:
+                        self.pickup_item(s, inventory, all_items)
                         
     def get_shop_name(self):
         self.shop_input_active = True
