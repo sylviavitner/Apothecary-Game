@@ -66,7 +66,7 @@ class Player(pygame.sprite.Sprite):
             if current_time - self.last_update >= self.frame_cooldown:
                 self.last_update = current_time
                 self.frame +=1
-                if self.frame >= 4:
+                if self.frame >= self.num_frames:
                     self.frame = 0
         else:
             self.frame = 0
