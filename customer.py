@@ -24,6 +24,7 @@ class Customer(pygame.sprite.Sprite):
         self.start_y = self.rect.y
         self.image = self.frames_list[self.frame]
         self.last_update = pygame.time.get_ticks()
+        self.arrival_time = pygame.time.get_ticks()
         self.show = False
         self.moving = True
         self.target_stand = None
@@ -52,13 +53,13 @@ class Customer(pygame.sprite.Sprite):
                 self.frame += 1
                 if self.frame >= self.num_frames:
                     self.frame = 0
-            else:
-                self.frame = 0
+        else:
+            self.frame = 0
 
-            self.image = self.frames_list[self.frame]
+        self.image = self.frames_list[self.frame]
 
-            if self.direction == "left":
-                self.image = pygame.transform.slip(self.image, True, False)
+        if self.direction == "left":
+            self.image = pygame.transform.flip(self.image, True, False)
 
     # ONLY sets the state of alive or not, not enter, exit etc. state (not self.state)
     def set_state(self, state):
@@ -92,31 +93,44 @@ class Customer(pygame.sprite.Sprite):
 
         x = randint(1, 100) # decide to buy or not
 
+        self.target_stand = stand
+
         if buy_chance <= x:
-            self.target_stand = stand
             self.desired_quantity = randint(1, stand.quantity) # choose random quantity
+        else:
+            self.desired_quantity = 0
 
     def move_toward_target_pos(self, target_x, target_y, current_time):
         if self.rect.y < target_y:
             self.rect.y += 1 * self.speed
+            return
         elif target_x > self.start_x:
             if self.rect.x < target_x:
+                self.direction = "right"
                 self.rect.x += 1 * self.speed
+                return
         elif target_x < self.start_x:
             if self.rect.x > target_x:
+                self.direction = "left"
                 self.rect.x -= 1 * self.speed
-        else:
-            self.state = 0
-            self.arrival_time = current_time
+                return
+            
+        self.state = 0 # still
+        self.moving = False
+        self.arrival_time = current_time
 
-    def exit_shop(self):
-        if self.target.x > self.start_x:
+    def exit_shop(self, target_x):
+        if target_x > self.start_x:
             if self.rect.x > self.start_x:
+                self.direction = "left"
                 self.rect.x -= 1 * self.speed
-        elif self.target.x < self.start_x:
+                return
+        elif target_x < self.start_x:
             if self.rect.x < self.start_x:
+                self.direction = "right"
                 self.rect.x += 1 * self.speed
-        elif self.rect.y > self.start_y:
+                return
+        if self.rect.y > self.start_y:
             self.rect.y -= 1 * self.speed
         else:
             self.kill() # delete when done
@@ -132,29 +146,24 @@ class Customer(pygame.sprite.Sprite):
             return
         
         target_x, target_y = self.target_stand.rect.x, self.target_stand.rect.y
-       
-        if target_x < self.rect.x:
-            self.direction = "left"
-        else:
-            self.direction = "right"
 
         # move to target and stop when there
         if self.state == 1:
+            self.moving = True
             self.move_toward_target_pos(target_x, target_y, current_time)
 
-        # change direction and state after the cooldown
-        elif self.state == 0 and current_time - self.arrival_time >= self.buy_cooldown:
-            if self.target_stand:
-                self.buy_item()
-            if self.direction == "left":
-                self.direction = "right" 
-            else:
-                self.direction = "left"
-            self.state = 2
+        # change state after the cooldown
+        elif self.state == 0:
+            self.moving = False
+            if current_time - self.arrival_time >= self.buy_cooldown:
+                if self.target_stand:
+                    self.buy_item()
+                self.state = 2
 
         # exit shop
         elif self.state == 2:
-            self.exit_shop()
+            self.moving = True
+            self.exit_shop(target_x)
 
 
     # visit the shop and (potentially) buy something
@@ -177,14 +186,14 @@ class Customer(pygame.sprite.Sprite):
 
 class CustomerHandler():
     def __init__(self):
-        self.cooldown = 3000
+        self.cooldown = 8000
         self.last_entered = pygame.time.get_ticks()
 
     def deploy_customer(self, player, current_time, screen, customers, shop_sprites):
-        if not shop_sprites and player.inside_shop and player.shop_open:
+        if not shop_sprites or not player.inside_shop or not player.shop_open:
             return
-        if current_time - self.last_entered >= self.cooldown:
-            #self.last_entered = current_time
+        elif current_time - self.last_entered >= self.cooldown:
+            self.last_entered = current_time
             x = randint(0, 3) # number of customer frames
             customer = Customer("assets/customer.png", screen, x)
             customer.visit_shop(player, shop_sprites)

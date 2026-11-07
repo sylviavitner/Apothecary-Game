@@ -10,7 +10,7 @@ class Button(Sprite):
         self.name = "button"
         self.show = False
 
-    def handle_event(self, event, player, background, shop, shop_screen, inventory, all_items):
+    def handle_event(self, event, player, background, shop, shop_screen, inventory, all_items, buttons):
         if event.type != pygame.MOUSEBUTTONDOWN:
             return
         elif event.button == 1: # left mouse click
@@ -21,6 +21,10 @@ class Button(Sprite):
                         player.rect.center = player.map_position
                         background.set_state(0)
                         shop.set_state(0)
+                        for b in buttons:
+                            if b.type == "open_close":
+                                b.set_frame(1)
+                                player.shop_open = False
                     case "open_close":
                         if self.frame == 1:
                             self.set_frame(2)

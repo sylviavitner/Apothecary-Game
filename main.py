@@ -70,10 +70,10 @@ while run:
     
         # shop button events
         for button in shop_buttons:
-            button.handle_event(event, player, background, shop, shop_window, inventory, all_items)
+            button.handle_event(event, player, background, shop, shop_window, inventory, all_items, shop_buttons)
         # shop window buttons (buying window inside shop)
         for button in shop_window.buttons:
-            button.handle_event(event, player, background, shop, shop_window, inventory, all_items)
+            button.handle_event(event, player, background, shop, shop_window, inventory, all_items, shop_buttons)
         # update items and item positions
         if all_items:
             for item in all_items:
@@ -104,6 +104,7 @@ while run:
         customer_handler.deploy_customer(player, current_time, SCREEN, customers, shop_sprites) # will only deploy after a cooldown
         if customers:
             for c in customers:
+                c.update_frame(current_time)
                 c.handle_movement(player, current_time)
 
         # grow berries after cooldown

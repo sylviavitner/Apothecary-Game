@@ -112,11 +112,11 @@ class Player(pygame.sprite.Sprite):
                     self.dy -= 1
     
             if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                self.moving = True  
                 if self.inside_shop and self.rect.y < screen.get_rect().height - (self.size*self.scale):
                     self.rect.y += 1 * self.speed
                 else:
-                    self.dy += 1
-                    self.moving = True   
+                    self.dy += 1 
 
         elif self.inside_shop:  
             self.rect.x = screen.get_rect().left + 200
