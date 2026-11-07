@@ -105,7 +105,7 @@ while run:
         if customers:
             for c in customers:
                 c.update_frame(current_time)
-                c.handle_movement(player, current_time)
+                c.handle_movement(player, current_time, shop_sprites)
 
         # grow berries after cooldown
         for b in bushes:

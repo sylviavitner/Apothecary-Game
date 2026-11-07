@@ -75,19 +75,19 @@ class Customer(pygame.sprite.Sprite):
         buy_chance = 0 # out of 100
 
         ppu = int(stand.price_per_unit)
-        market = stand.market_price
+        market = stand.item.market_price
 
         # price per unit and market price determine odds of a successful purchase
         if ppu <= market * 0.5:
             buy_chance = 99
         elif ppu <= market * 0.8:
-            buy_chance = 80
-        elif ppu > market * 0.8 <= market * 1.2:
             buy_chance = 70
-        elif ppu > market * 1.2 <= market * 1.6:
-            buy_chance = 33
-        elif ppu > market * 1.6 <= market * 2:
-            buy_chance = 10
+        elif ppu <= market * 1.2:
+            buy_chance = 50
+        elif ppu <= market * 1.6:
+            buy_chance = 20
+        elif ppu <= market * 2:
+            buy_chance = 5
         else: # greater than 2x market
             buy_chance = 0
 
@@ -95,7 +95,7 @@ class Customer(pygame.sprite.Sprite):
 
         self.target_stand = stand
 
-        if buy_chance <= x:
+        if buy_chance >= x:
             self.desired_quantity = randint(1, stand.quantity) # choose random quantity
         else:
             self.desired_quantity = 0
@@ -136,10 +136,36 @@ class Customer(pygame.sprite.Sprite):
             self.kill() # delete when done
         
     
-    def buy_item(self):
-        print("Item bought") #todo
+    def buy_item(self, player, shop_sprites):
+        if self.desired_quantity == 0:
+            return # no buy
+        valid_item = False
+        valid_quantity = False
+        for s in shop_sprites:
+            # check the actual item stand instance
+            if s.name == "item_stand" and pygame.sprite.collide_rect(self, s):
+                if s.item:
+                    valid_item = True
+                if s.quantity >= self.desired_quantity:
+                    valid_quantity = True
+
+            if not valid_quantity:
+                amount = 1
+
+            if valid_item:
+                # give player coins
+                cost = int(s.price_per_unit) * amount
+                player.coins += cost
+                # remove from item stand
+                s.quantity -= amount
+                if s.quantity == 0:
+                    s.item.kill()
+                    s.clear()
+                return
+
+
  
-    def handle_movement(self, player, current_time):
+    def handle_movement(self, player, current_time, shop_sprites):
 
         if not player.inside_shop or not player.shop_open or not self.show or not self.target_stand:
             self.set_state(0)
@@ -157,7 +183,7 @@ class Customer(pygame.sprite.Sprite):
             self.moving = False
             if current_time - self.arrival_time >= self.buy_cooldown:
                 if self.target_stand:
-                    self.buy_item()
+                    self.buy_item(player, shop_sprites)
                 self.state = 2
 
         # exit shop
