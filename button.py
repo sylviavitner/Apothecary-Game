@@ -24,8 +24,10 @@ class Button(Sprite):
                     case "open_close":
                         if self.frame == 1:
                             self.set_frame(2)
+                            player.shop_open = True
                         elif self.frame == 2:
                             self.set_frame(1)
+                            player.shop_open = False
                     #case "edit":
                         #pass
                     case "buy":

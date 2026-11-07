@@ -7,6 +7,7 @@ from bush import Bush
 from button import Button
 from inventory import Inventory
 from shop_window import ShopWindow
+from customer import CustomerHandler
 
 pygame.init()
 
@@ -27,6 +28,7 @@ shop = ShopSprite("assets/shop.png")
 background = Background()
 start_screen = StartScreen()
 shop_window = ShopWindow("assets/shop_screen.png", SCREEN)
+customer_handler = CustomerHandler()
 
 # shop buttons
 open_close_button = Button("assets/buttons.png", CENTER_X - 64, 50, "open_close", 1) # 64 for size scaled by 2
@@ -44,6 +46,7 @@ map_sprites = pygame.sprite.Group(shop, bush, bush2) # sprites that appear on th
 shop_sprites = pygame.sprite.Group(exit_button, open_close_button, buy_button) # sprites that appear inside the shop (and only inside the shop)
 all_items = pygame.sprite.Group()
 growables = pygame.sprite.Group()
+customers = pygame.sprite.Group()
 
 # inventory
 inventory = Inventory("assets/slot.png")
@@ -97,11 +100,17 @@ while run:
         player.check_collisions(map_sprites, shop_sprites)
         player.move(current_time, SCREEN)
 
+        # handle customer movement / intereactions
+        customer_handler.deploy_customer(player, current_time, SCREEN, customers, shop_sprites) # will only deploy after a cooldown
+        if customers:
+            for c in customers:
+                c.handle_movement(player, current_time)
+
         # grow berries after cooldown
         for b in bushes:
             b.grow_berries(current_time)
 
-        # grow growable items after a cooldown (seeds to bush)
+        # grow growable items after a cooldown (seedas to bush)
         if growables:
             for g in growables:
                 if g in map_sprites:

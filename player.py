@@ -35,6 +35,7 @@ class Player(pygame.sprite.Sprite):
         # Shop variables
         self.allow_shop_entry = False
         self.inside_shop = False
+        self.shop_open = False
         self.shop_input_active = True
         self.shop_name = ""
         self.max_name_length = 20
@@ -241,8 +242,8 @@ class Player(pygame.sprite.Sprite):
             # collisions with sprites when inside shop
             elif self.inside_shop:
                 for s in s_sprites:
-                    if s.for_sale:
-                        pass # for now ignore items on stands
+                    if s.name == "customer" or s.for_sale:
+                        pass # ignore customers and items on stands
                     elif s.name in self.obtainable_items and s.allow_pickup:
                         
                         # item stand interactions
