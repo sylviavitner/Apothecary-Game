@@ -2,8 +2,8 @@ import pygame
 from sprite import Sprite
 
 class Item(Sprite):
-    def __init__(self, img, name, stack_size=100, inside_inventory=True, size=32):
-        super().__init__(img, size, num_frames=2, x_pos=0, y_pos=0, scale=3)
+    def __init__(self, img, name, stack_size=100, inside_inventory=True, size=32, num_frames=2):
+        super().__init__(img, size, num_frames=num_frames, x_pos=0, y_pos=0, scale=3)
         self.name = name # red_berry, seed, purple_berry, item_stand
         self.stack_size = stack_size
         self.inside_inventory = inside_inventory
@@ -248,27 +248,39 @@ class Cauldron(Item):
         self.rect.y = y
         self.market_price = 100 # shop price and reccomended selling price
         self.name = "cauldron"
-        self.crafting_combos = {
-            "red_potion": ["red_berry", "red_berry"],
-            "blue_potion": ["red_berry", "purple_berry", "purple_berry"],
-            "green_potion": ["red_berry", "purple_berry", "seed"]
-        }
         self.sprites = []
 
     def check_sprite_collisions(self, sprites):
+        self.sprites = [] # reset every time so when player picks up it won't stay in the list
         for s in sprites:
             if pygame.sprite.collide_rect(self, s):
                 self.sprites.append(s)
 
     def craft_potion(self):
-        pass
+        for s in self.sprites:
+            pass
 
-# potions
+# flask and potions
+class EmptyFlask(Item):
+    def __init__(self):
+        super().__init__("assets/empty_flask", "empty_flask")
+        self.market_price = 25
+
 class RedPotion(Item):
-    pass
+    def __init__(self):
+        super().__init__("assets/red_potion.png", "red_potion")
+        self.market_price = 100
+        self.recipe = ["red_berry", "red_berry"]
 
-class BluePotion(Item):
-    pass
+
+class PurplePotion(Item):
+    def __init__(self):
+        super().__init__("assets/purple_potion.png", "pruple_potion")
+        self.market_price = 150
+        self.recipe = ["red_berry", "purple_berry"]
 
 class GreenPotion(Item):
-    pass
+    def __init__(self):
+        super().__init__("assets/green_potion.png", "green_potion")
+        self.market_price = 150
+        self.recipe = ["red_berry", "purple_berry", "seed"]
