@@ -1,7 +1,7 @@
 import pygame
 from random import randint
 from sprite import Sprite
-import item
+import item as item
 
 class Bush(Sprite):
     def __init__(self, img, x_pos=400, y_pos=600):

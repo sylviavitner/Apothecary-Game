@@ -18,7 +18,6 @@ FPS = 60
 CLOCK = pygame.time.Clock()
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
 BG_COLORS = [(60, 163, 112), (150, 66, 83)] # map, shop
-BG_STATE = 0
 
 pygame.display.set_caption("Apothecary Shop Sim")
 

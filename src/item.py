@@ -95,7 +95,7 @@ class RedBerry(Item):
         super().__init__("assets/red_berry.png", "red_berry")
         self.market_price = 10
 
-import bush
+import bush as bush
 
 # seed
 class Seed(Item):
@@ -240,3 +240,35 @@ class ItemStand(Item):
                 screen.blit(price_text, (text_x, text_y))
                 screen.blit(quantity_text, (text_x, text_y + 25))
 
+# cauldron
+class Cauldron(Item):
+    def __init__(self, size=32, x=0, y=0, inside_inventory=False):
+        super().__init__("assets/cauldron.png", "cauldron", stack_size=1, inside_inventory=inside_inventory, size=size)
+        self.rect.x = x
+        self.rect.y = y
+        self.market_price = 100 # shop price and reccomended selling price
+        self.name = "cauldron"
+        self.crafting_combos = {
+            "red_potion": ["red_berry", "red_berry"],
+            "blue_potion": ["red_berry", "purple_berry", "purple_berry"],
+            "green_potion": ["red_berry", "purple_berry", "seed"]
+        }
+        self.sprites = []
+
+    def check_sprite_collisions(self, sprites):
+        for s in sprites:
+            if pygame.sprite.collide_rect(self, s):
+                self.sprites.append(s)
+
+    def craft_potion(self):
+        pass
+
+# potions
+class RedPotion(Item):
+    pass
+
+class BluePotion(Item):
+    pass
+
+class GreenPotion(Item):
+    pass
