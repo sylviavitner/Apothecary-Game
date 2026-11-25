@@ -3,16 +3,17 @@
 import pygame
 
 class SpriteRevised(pygame.sprite.Sprite):
-    def __init__(self, img, size=32, num_frames=2, num_rows=1):
+    def __init__(self, img, size=32, num_frames=2, num_rows=1, scale=5, frame=0):
         pygame.sprite.Sprite.__init__(self)
 
         # all sprites have these
         self.images = pygame.image.load(img).convert_alpha # player and customer will overwrite
         self.name = None # set in children
+        self.scale = scale
         self.size = size
         self.num_frames = num_frames
         self.num_rows = num_rows
-        self.frame = 0 # may be reset in children (buttons?)
+        self.frame = frame
         self.frames_list = self.get_frames()
         self.rect = self.frames_list[0].get_rect()
         self.rect.x = 0
@@ -28,7 +29,7 @@ class SpriteRevised(pygame.sprite.Sprite):
         def get_frames(self):
             frames = []
             for i in range(self.num_frames):
-                frame = self.get_image(self.size, self.size, i, self.scale)
+                frame = self.get_image(i, self.scale)
                 frames.append(frame)
             return frames
 

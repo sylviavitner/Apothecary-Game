@@ -1,5 +1,5 @@
 import pygame
-from item import ItemStand
+from item import ItemStand, EmptyFlask, Cauldron
 from button import Button
 
 class ShopWindow():
@@ -16,17 +16,23 @@ class ShopWindow():
         self.buttons = self.get_buttons()
 
     def get_items(self):
-        item_stand = ItemStand(x=self.rect.x + 50, y=self.rect.y + 50)
-        return pygame.sprite.Group(item_stand) # for now just 1 item
+        ts = ItemStand()
+        size, scale = ts.size, ts.scale
+        ts.kill()
+        item_stand = ItemStand(x=(self.rect.centerx - (size*scale)) - 200, y=self.rect.y + 50)
+        empty_flask = EmptyFlask(x=(self.rect.centerx - (size*scale)), y=item_stand.rect.y)
+        cauldron = Cauldron(x=(self.rect.centerx - (size*scale)) + 200, y=item_stand.rect.y)
+        return pygame.sprite.Group(item_stand, empty_flask, cauldron) # for now just 1 item
 
     def get_buttons(self):
         buttons = pygame.sprite.Group()
         for i, item in enumerate(self.items):
-            b = Button(img="assets/shop_window_buttons.png", x_pos=item.rect.centerx - 32, y_pos=item.rect.y + (item.size*item.scale), type=item.name, frame=i, scale=1)
+            b = Button(img="assets/shop_window_buttons.png", x_pos=item.rect.x - (item.size // 2), y_pos=item.rect.y + (item.size*item.scale), type=item.name, frame=i, scale=2)
             buttons.add(b)
         return buttons
 
     def draw(self, screen, player):
+        self.rect.center = screen.get_rect().center # reset in case resized
         if self.show and player.inside_shop:
             screen.blit(self.image, (self.rect.x, self.rect.y))
             for item in self.items:

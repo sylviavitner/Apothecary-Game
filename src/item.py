@@ -248,39 +248,56 @@ class Cauldron(Item):
         self.rect.y = y
         self.market_price = 100 # shop price and reccomended selling price
         self.name = "cauldron"
-        self.sprites = []
+        self.sprite_counts = dict()
+        self.recipes = {
+            "red_potion": ["red_berry", "red_berry", "red_berry"],
+            "purple_potion": ["red_berry", "purple_berry", "purple_berry"],
+            "green_potion": ["red_berry", "purple_berry", "seed", "seed"]
+        }
 
     def check_sprite_collisions(self, sprites):
-        self.sprites = [] # reset every time so when player picks up it won't stay in the list
+        self.sprites = pygame.sprite.Group() # reset every time so when player picks up it won't stay in the list
         for s in sprites:
             if pygame.sprite.collide_rect(self, s):
-                self.sprites.append(s)
+                self.sprites.add(s)
 
     def craft_potion(self):
         for s in self.sprites:
             pass
-
+        
+            
 # flask and potions
 class EmptyFlask(Item):
-    def __init__(self):
-        super().__init__("assets/empty_flask", "empty_flask")
+    def __init__(self, x=0, y=0, inside_inventory=False):
+        super().__init__("assets/empty_flask.png", "empty_flask", inside_inventory=inside_inventory)
         self.market_price = 25
+        self.id = 0
+        self.rect.x = x
+        self.rect.y = y
 
 class RedPotion(Item):
-    def __init__(self):
-        super().__init__("assets/red_potion.png", "red_potion")
+    def __init__(self, x=0, y=0, inside_inventory=False):
+        super().__init__("assets/red_potion.png", "red_potion", inside_inventory=inside_inventory)
         self.market_price = 100
         self.recipe = ["red_berry", "red_berry"]
-
+        self.id = 1
+        self.rect.x = x
+        self.rect.y = y
 
 class PurplePotion(Item):
-    def __init__(self):
-        super().__init__("assets/purple_potion.png", "pruple_potion")
+    def __init__(self, x=0, y=0, inside_inventory=False):
+        super().__init__("assets/purple_potion.png", "purple_potion", inside_inventory=inside_inventory)
         self.market_price = 150
         self.recipe = ["red_berry", "purple_berry"]
+        self.id = 2
+        self.rect.x = x
+        self.rect.y = y
 
 class GreenPotion(Item):
-    def __init__(self):
-        super().__init__("assets/green_potion.png", "green_potion")
+    def __init__(self, x=0, y=0, inside_inventory=False):
+        super().__init__("assets/green_potion.png", "green_potion", inside_inventory=inside_inventory)
         self.market_price = 150
         self.recipe = ["red_berry", "purple_berry", "seed"]
+        self.id = 3
+        self.rect.x = x
+        self.rect.y = y
