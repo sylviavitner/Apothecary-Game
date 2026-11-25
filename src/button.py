@@ -1,6 +1,6 @@
 import pygame
 from sprite import Sprite
-from item import ItemStand
+from item import ItemStand, EmptyFlask, Cauldron
 
 class Button(Sprite):
     def __init__(self, img, x_pos=200, y_pos=600, type="exit", frame=0, scale=2):
@@ -37,12 +37,20 @@ class Button(Sprite):
                     case "buy":
                         shop_screen.show = not shop_screen.show
                     case "item_stand":
-                        # implement coin logic here too
-                        if player.coins >= 50: # to fix
+                        if player.coins >= 50:
                             item_stand = ItemStand(inside_inventory=True)
                             all_items.add(item_stand.add_to_inventory(inventory))
                             player.coins -= 50
-                       
+                    case "empty_flask":
+                        if player.coins >= 100:
+                            flask = EmptyFlask(inside_inventory=True)
+                            all_items.add(flask.add_to_inventory(inventory))
+                            player.coins -= 100
+                    case "cauldron":
+                       if player.coins >= 150:
+                            cauldron = Cauldron(inside_inventory=True)
+                            all_items.add(cauldron.add_to_inventory(inventory))
+                            player.coins -= 150
 
 
 

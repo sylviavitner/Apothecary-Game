@@ -30,7 +30,8 @@ class Player(pygame.sprite.Sprite):
         # other sprites on map move by -dx, -dy * player speed
         self.dx = 0
         self.dy = 0
-        self.obtainable_items = ["red_berry", "seed", "purple_berry", "item_stand"]
+        # should probably be changed and set in specific item classes
+        self.obtainable_items = ["red_berry", "seed", "purple_berry", "item_stand", "empty_flask", "cauldron"]
 
         # Shop variables
         self.allow_shop_entry = False

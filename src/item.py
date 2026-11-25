@@ -4,12 +4,13 @@ from sprite import Sprite
 class Item(Sprite):
     def __init__(self, img, name, stack_size=100, inside_inventory=True, size=32, num_frames=2):
         super().__init__(img, size, num_frames=num_frames, x_pos=0, y_pos=0, scale=3)
-        self.name = name # red_berry, seed, purple_berry, item_stand
+        self.name = name # red_berry, seed, purple_berry, item_stand, flask, cauldron
         self.stack_size = stack_size
         self.inside_inventory = inside_inventory
         self.slot_index = -1 # -1 for not in inventory, 0-29  for slots
         self.allow_click_to_move = False
         self.allow_pickup = False
+        self.is_ingredient = False # only berry and seeds
         #self.for_sale = False
 
     def make_copy(self):
@@ -24,6 +25,15 @@ class Item(Sprite):
                 if self.inside_inventory:
                     return ItemStand(inside_inventory=True)
                 return ItemStand(inside_inventory=False)
+            case "empty_flask":
+                if self.inside_inventory:
+                    return EmptyFlask(inside_inventory=True)
+                return EmptyFlask(inside_inventory=False)
+            case "cauldron":
+                if self.inside_inventory:
+                    return Cauldron(inside_inventory=True)
+                return Cauldron(inside_inventory=False)
+
 
     # creates a new instance of the item and adds the amount to inventory
     def add_to_inventory(self, inventory, amount=1):
@@ -94,6 +104,7 @@ class RedBerry(Item):
     def __init__(self):
         super().__init__("assets/red_berry.png", "red_berry")
         self.market_price = 10
+        self.is_ingredient = True
 
 import bush as bush
 
@@ -104,6 +115,7 @@ class Seed(Item):
         super().__init__("assets/seed.png", "seed")
         self.cooldown = 3000
         self.market_price = 15
+        self.is_ingredient = True
 
     def grow_bush(self, current_time):
         if not self.inside_inventory and current_time - self.time_placed >= self.cooldown:
@@ -121,6 +133,7 @@ class PurpleBerry(Item):
     def __init__(self):
         super().__init__("assets/purple_berry.png", "purple_berry")
         self.market_price = 25
+        self.is_ingredient = True
 
 # item stand
 class ItemStand(Item):
@@ -248,28 +261,39 @@ class Cauldron(Item):
         self.rect.y = y
         self.market_price = 100 # shop price and reccomended selling price
         self.name = "cauldron"
-        self.sprite_counts = dict()
-        self.recipes = {
-            "red_potion": ["red_berry", "red_berry", "red_berry"],
-            "purple_potion": ["red_berry", "purple_berry", "purple_berry"],
-            "green_potion": ["red_berry", "purple_berry", "seed", "seed"]
+        self.sprite_counts = {
+            "red_berry": 0,
+            "purple_berry": 0,
+            "seed": 0
         }
+        self.recipes = self.get_recipes()
+
+    def get_recipes(self):
+        potions = pygame.sprite.Group(RedPotion(), PurplePotion(), GreenPotion())
+        recipes = {}
+        for p in potions:
+            recipes[p.name] = p.recipe
+            p.kill()
 
     def check_sprite_collisions(self, sprites):
         self.sprites = pygame.sprite.Group() # reset every time so when player picks up it won't stay in the list
         for s in sprites:
-            if pygame.sprite.collide_rect(self, s):
-                self.sprites.add(s)
+            if not s.is_ingredient:
+                continue
+            elif pygame.sprite.collide_rect(self, s):
+                self.sprite_counts[s.name] += 1
 
     def craft_potion(self):
-        for s in self.sprites:
+        for recipe in self.recipes:
             pass
+            
         
             
 # flask and potions
 class EmptyFlask(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/empty_flask.png", "empty_flask", inside_inventory=inside_inventory)
+        self.name = "empty_flask"
         self.market_price = 25
         self.id = 0
         self.rect.x = x
@@ -278,8 +302,8 @@ class EmptyFlask(Item):
 class RedPotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/red_potion.png", "red_potion", inside_inventory=inside_inventory)
-        self.market_price = 100
-        self.recipe = ["red_berry", "red_berry"]
+        self.market_price = 160
+        self.recipe = {"red_berry": 3}
         self.id = 1
         self.rect.x = x
         self.rect.y = y
@@ -287,8 +311,8 @@ class RedPotion(Item):
 class PurplePotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/purple_potion.png", "purple_potion", inside_inventory=inside_inventory)
-        self.market_price = 150
-        self.recipe = ["red_berry", "purple_berry"]
+        self.market_price = 190
+        self.recipe = {"red_berry": 1, "purple_berry": 2}
         self.id = 2
         self.rect.x = x
         self.rect.y = y
@@ -296,8 +320,8 @@ class PurplePotion(Item):
 class GreenPotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/green_potion.png", "green_potion", inside_inventory=inside_inventory)
-        self.market_price = 150
-        self.recipe = ["red_berry", "purple_berry", "seed"]
+        self.market_price = 210
+        self.recipe = {"red_berry": 1, "purple_berry": 1, "seed": 1}
         self.id = 3
         self.rect.x = x
         self.rect.y = y
