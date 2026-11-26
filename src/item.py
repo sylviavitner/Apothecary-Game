@@ -261,12 +261,13 @@ class Cauldron(Item):
         self.rect.y = y
         self.market_price = 100 # shop price and reccomended selling price
         self.name = "cauldron"
-        self.sprite_counts = {
+        self.item_counts = {
             "red_berry": 0,
             "purple_berry": 0,
             "seed": 0
         }
         self.recipes = self.get_recipes()
+        self.to_remove = [] # for sprites to remove after crafting
 
     def get_recipes(self):
         potions = pygame.sprite.Group(RedPotion(), PurplePotion(), GreenPotion())
@@ -275,18 +276,37 @@ class Cauldron(Item):
             recipes[p.name] = p.recipe
             p.kill()
 
-    def check_sprite_collisions(self, sprites):
+    def count_sprite_collisions(self, sprites):
         self.sprites = pygame.sprite.Group() # reset every time so when player picks up it won't stay in the list
         for s in sprites:
             if not s.is_ingredient:
                 continue
             elif pygame.sprite.collide_rect(self, s):
-                self.sprite_counts[s.name] += 1
+                self.item_counts[s.name] += 1
 
-    def craft_potion(self):
+    def craft_potion(self, sprites):
         for recipe in self.recipes:
-            pass
-            
+            can_craft = True
+            self.to_remove = []
+            self.count_sprite_collisions() # recount each time so items aren't reused
+            for item, required_amount in self.recipes[recipe]:
+                if self.item_counts[item] >= required_amount:
+                    self.to_remove.append(item)
+                else:
+                    self.to_remove = []
+                    can_craft = False
+                    continue
+
+            if can_craft:
+                match recipe:
+                    case "red_potion":
+                        potion = RedPotion(self.rect.x, self.rect.y + self.size)
+                    case "purple_potion":
+                        potion = PurplePotion(self.rect.x, self.rect.y + self.size)
+                    case "green_potion":
+                        potion = GreenPotion(self.rect.x, self.rect.y + self.size)
+
+            sprites.add(potion)
         
             
 # flask and potions

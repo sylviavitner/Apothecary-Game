@@ -193,6 +193,12 @@ class Player(pygame.sprite.Sprite):
         all_items.add(item)
         item_stand.prompt_user()
 
+    def place_in_cauldron(self, cauldron, inventory, sprites, all_items):
+        to_add = self.find_first_sellable(inventory)
+        if to_add is None:
+            return
+        ### Todo finish this method and others needed in cauldron
+
     def pickup_item(self, s, inventory, all_items, amount=1):
         s.set_frame(0)
         s.allow_pickup = False
@@ -251,6 +257,9 @@ class Player(pygame.sprite.Sprite):
                         if s.name == "item_stand":
                             if s.item is None:
                                 self.place_on_stand(s, inventory, s_sprites, all_items)
+
+                        elif s.name == "cauldron":
+                            self.place_in_cauldron()
 
                         # items that are picked up normally
                         else:
