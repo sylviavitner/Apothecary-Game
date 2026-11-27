@@ -20,9 +20,8 @@ class ShopWindow():
         size, scale = ts.size, ts.scale
         ts.kill()
         item_stand = ItemStand(x=(self.rect.centerx - (size*scale)) - 200, y=self.rect.y + 50)
-        empty_flask = EmptyFlask(x=(self.rect.centerx - (size*scale)), y=item_stand.rect.y)
-        cauldron = Cauldron(x=(self.rect.centerx - (size*scale)) + 200, y=item_stand.rect.y)
-        return pygame.sprite.Group(item_stand, empty_flask, cauldron) # for now just 1 item
+        cauldron = Cauldron(x=(self.rect.centerx - (size*scale)), y=item_stand.rect.y)
+        return pygame.sprite.Group(item_stand, cauldron)
 
     def get_buttons(self):
         buttons = pygame.sprite.Group()

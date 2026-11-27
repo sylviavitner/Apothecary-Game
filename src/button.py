@@ -40,17 +40,17 @@ class Button(Sprite):
                         if player.coins >= 50:
                             item_stand = ItemStand(inside_inventory=True)
                             all_items.add(item_stand.add_to_inventory(inventory))
-                            player.coins -= 50
+                            player.coins -= item_stand.market_price
                     case "empty_flask":
                         if player.coins >= 100:
                             flask = EmptyFlask(inside_inventory=True)
                             all_items.add(flask.add_to_inventory(inventory))
-                            player.coins -= 100
+                            player.coins -= flask.market_price
                     case "cauldron":
                        if player.coins >= 150:
                             cauldron = Cauldron(inside_inventory=True)
                             all_items.add(cauldron.add_to_inventory(inventory))
-                            player.coins -= 150
+                            player.coins -= cauldron.market_price
 
 
 

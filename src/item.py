@@ -352,6 +352,7 @@ class Cauldron(Item):
 
         
 # flask and potions
+# this was removed for simplicity
 class EmptyFlask(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/empty_flask.png", "empty_flask", inside_inventory=inside_inventory)
@@ -363,7 +364,7 @@ class EmptyFlask(Item):
 class RedPotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/red_potion.png", "red_potion", inside_inventory=inside_inventory)
-        self.market_price = 160
+        self.market_price = 100
         self.recipe = {"red_berry": 3}
         self.rect.x = x
         self.rect.y = y
@@ -371,7 +372,7 @@ class RedPotion(Item):
 class PurplePotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/purple_potion.png", "purple_potion", inside_inventory=inside_inventory)
-        self.market_price = 190
+        self.market_price = 150
         self.recipe = {"red_berry": 1, "purple_berry": 2}
         self.rect.x = x
         self.rect.y = y
@@ -379,7 +380,7 @@ class PurplePotion(Item):
 class GreenPotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/green_potion.png", "green_potion", inside_inventory=inside_inventory)
-        self.market_price = 210
+        self.market_price = 200
         self.recipe = {"red_berry": 1, "purple_berry": 1, "seed": 1}
         self.rect.x = x
         self.rect.y = y
