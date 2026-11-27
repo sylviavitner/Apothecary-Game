@@ -11,6 +11,7 @@ class Item(Sprite):
         self.allow_click_to_move = False
         self.allow_pickup = False
         self.is_ingredient = False # only berry and seeds
+        self.market_price = 10 # default just in case
         #self.for_sale = False
 
     def make_copy(self):
@@ -254,6 +255,7 @@ class ItemStand(Item):
 
                 quantity_text = self.font.render(f"Quantity: {q_string}", True, (255, 255, 235))
                 price_text = self.font.render(f"Price: {ppu_string}", True, (255, 255, 235))
+                market_price_text = self.font.render(f"{self.item.name} market price: {self.item.market_price}", True, (255, 255, 235))
 
                 # when input is submitted change opacity :)
                 if not self.prompt_active:
@@ -261,9 +263,11 @@ class ItemStand(Item):
                     price_text.set_alpha(127)
 
                 text_x = self.rect.x
-                text_y = self.rect.y - (self.size * self.scale)
-                screen.blit(price_text, (text_x, text_y))
-                screen.blit(quantity_text, (text_x, text_y + 25))
+                text_y = self.rect.y - (self.size * self.scale + 25)
+                if self.prompt_active:
+                    screen.blit(market_price_text, (text_x, text_y))
+                screen.blit(price_text, (text_x, text_y + 25))
+                screen.blit(quantity_text, (text_x, text_y + 50))
 
 # cauldron
 class Cauldron(Item):
