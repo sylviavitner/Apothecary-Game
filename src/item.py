@@ -316,11 +316,11 @@ class Cauldron(Item):
             if can_craft:
                 match recipe:
                     case "red_potion":
-                        potion = RedPotion(self.rect.x, self.rect.y + self.size)
+                        potion = RedPotion(self.rect.x + self.size*self.scale, self.rect.y)
                     case "purple_potion":
-                        potion = PurplePotion(self.rect.x, self.rect.y + self.size)
+                        potion = PurplePotion(self.rect.x + self.size*self.scale, self.rect.y)
                     case "green_potion":
-                        potion = GreenPotion(self.rect.x, self.rect.y + self.size)
+                        potion = GreenPotion(self.rect.x + self.size*self.scale, self.rect.y)
 
                 for itm in to_remove:
                     self.remove_item(itm, to_remove[item])

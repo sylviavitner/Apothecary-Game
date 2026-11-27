@@ -128,13 +128,18 @@ class Player(pygame.sprite.Sprite):
         self.update_frame(current_time)
 
     # checks for collision between player and other sprites
-    def check_collisions(self, m_sprites, s_sprites):
+    def check_collisions(self, m_sprites, s_sprites, text_handler):
+
+        # reset interaction text
+        text_handler.clear_text()
 
         # check for collisions with shop sprites
         for s in s_sprites:
             if self.inside_shop:
                 s.set_state(1)
                 if pygame.sprite.collide_rect(self, s):
+                    # display interaction text
+                    text_handler.update_text(s)
                     if s.name in self.obtainable_items and not s.for_sale and not s.inside_cauldron:
                         s.set_frame(1)
                         s.allow_pickup = True
@@ -143,12 +148,15 @@ class Player(pygame.sprite.Sprite):
                     s.allow_pickup = False
             else:
                 s.set_state(0) # only visible inside shop
-        
+
+        # check for collisions with map sprites
         for s in m_sprites:
             if self.inside_shop:
                 s.set_state(0)
             else:
                 s.set_state(1)
+                if pygame.sprite.collide_rect(self, s):
+                    text_handler.update_text(s)
                 # allow shop entry when interacting with shop sprite
                 if s.name == "shop":
                     if pygame.sprite.collide_rect(self, s):
@@ -203,7 +211,7 @@ class Player(pygame.sprite.Sprite):
 
     def place_in_cauldron(self, cauldron, inventory, sprites, all_items):
         to_add = self.find_first_craftable(inventory)
-        if to_add is None:
+        if to_add is None or not pygame.sprite.collide_rect(self, cauldron):
             return
         item = cauldron.add_item(to_add)
         inventory.remove(to_add, 1)
@@ -244,7 +252,9 @@ class Player(pygame.sprite.Sprite):
                 # collisions with sprites on map (outside of shop)
                 for s in m_sprites:
                     s.set_state(0) # hide all map sprites
+
             elif not self.inside_shop and not self.allow_shop_entry:
+                
                 for s in m_sprites:
 
                     # harvest bush when player presses e

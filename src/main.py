@@ -8,6 +8,7 @@ from button import Button
 from inventory import Inventory
 from shop_window import ShopWindow
 from customer import CustomerHandler
+from text_handler import TextHandler
 
 pygame.init()
 
@@ -37,6 +38,9 @@ buy_button = Button("assets/buttons.png", open_close_button.rect.right + 128, 50
 # starting bushes
 bush = Bush("assets/bush.png", CENTER_X - 384, CENTER_Y - 50)
 bush2 = Bush("assets/bush.png", CENTER_X + 224, CENTER_Y - 50)
+
+# text handler
+text_handler = TextHandler()
 
 # sprite groups (at start)
 bushes = pygame.sprite.Group(bush, bush2)
@@ -96,7 +100,7 @@ while run:
     else:
 
         # check player collisions and move player
-        player.check_collisions(map_sprites, shop_sprites)
+        player.check_collisions(map_sprites, shop_sprites, text_handler)
         player.move(current_time, SCREEN)
 
         # handle customer movement / intereactions
@@ -144,6 +148,9 @@ while run:
 
         # draw shop screen
         shop_window.draw(SCREEN, player)
+
+        # draw text
+        text_handler.draw(inventory, SCREEN)
 
         # draw buttons last
         for b in shop_buttons:
