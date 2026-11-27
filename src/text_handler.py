@@ -7,15 +7,13 @@ class TextHandler():
         self.offset = 30
 
     def update_text(self, sprite):
-        if not sprite.frame == 1:
-            return
-        elif sprite.name in ["red_berry", "purple_berry", "seed", "red_potion", "purple_potion", "green_potion"]:
-            self.interactions_text.add("Press [X] to pick up")
+        if sprite.name in ["red_berry", "purple_berry", "seed", "red_potion", "purple_potion", "green_potion"]:
+            self.interactions_text.add("Press [E] or [X] to pick up item")
         elif sprite.name == "bush":
-            self.interactions_text.add("Press [E] to harvest")
+            self.interactions_text.add("Press [E] to harvest bush")
         elif sprite.name in ["item_stand", "cauldron"]:
             self.interactions_text.add("Press [E] to place item")
-            self.interactions_text.add("Press [X] to pick up")
+            self.interactions_text.add("Press [X] to pick up item")
 
     def clear_text(self):
         self.interactions_text = set()
