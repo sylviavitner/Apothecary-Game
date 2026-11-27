@@ -13,6 +13,7 @@ class Item(Sprite):
         self.is_ingredient = False # only berry and seeds
         self.market_price = 10 # default just in case
         #self.for_sale = False
+        self.display_name = ""
 
     def make_copy(self):
         match self.name:
@@ -118,6 +119,7 @@ class RedBerry(Item):
         super().__init__("assets/red_berry.png", "red_berry")
         self.market_price = 10
         self.is_ingredient = True
+        self.display_name = "Blood Berry"
 
 import bush as bush
 
@@ -129,6 +131,7 @@ class Seed(Item):
         self.cooldown = 3000
         self.market_price = 15
         self.is_ingredient = True
+        self.display_name = "Seed"
 
     def grow_bush(self, current_time):
         if not self.inside_inventory and current_time - self.time_placed >= self.cooldown:
@@ -147,6 +150,7 @@ class PurpleBerry(Item):
         super().__init__("assets/purple_berry.png", "purple_berry")
         self.market_price = 25
         self.is_ingredient = True
+        self.display_name = "Sour Berry"
 
 # item stand
 class ItemStand(Item):
@@ -164,6 +168,7 @@ class ItemStand(Item):
         self.prompt_active = False
         self.price_input_active = False
         self.quantity_input_active = False
+        self.display_name = "Item Stand"
 
     def handle_text_input(self, event, inventory, player, all_items):
         if not self.prompt_active:
@@ -255,7 +260,7 @@ class ItemStand(Item):
 
                 quantity_text = self.font.render(f"Quantity: {q_string}", True, (255, 255, 235))
                 price_text = self.font.render(f"Price: {ppu_string}", True, (255, 255, 235))
-                market_price_text = self.font.render(f"{self.item.name} market price: {self.item.market_price}", True, (255, 255, 235))
+                market_price_text = self.font.render(f"{self.item.display_name} market price: {self.item.market_price}", True, (255, 255, 235))
 
                 # when input is submitted change opacity :)
                 if not self.prompt_active:
@@ -286,6 +291,7 @@ class Cauldron(Item):
         }
         self.recipes = self.get_recipes()
         self.to_remove = [] # for sprites to remove after crafting
+        self.display_name = "Cauldron"
 
     def get_recipes(self):
         potions = pygame.sprite.Group(RedPotion(), PurplePotion(), GreenPotion())
@@ -365,6 +371,7 @@ class EmptyFlask(Item):
         self.market_price = 25
         self.rect.x = x
         self.rect.y = y
+        self.display_name = "Empty Flask"
 
 class RedPotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
@@ -373,6 +380,7 @@ class RedPotion(Item):
         self.recipe = {"red_berry": 3}
         self.rect.x = x
         self.rect.y = y
+        self.display_name = "Blood Potion"
 
 class PurplePotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
@@ -381,6 +389,7 @@ class PurplePotion(Item):
         self.recipe = {"red_berry": 1, "purple_berry": 2}
         self.rect.x = x
         self.rect.y = y
+        self.display_name = "Healing Potion"
 
 class GreenPotion(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
@@ -389,3 +398,4 @@ class GreenPotion(Item):
         self.recipe = {"red_berry": 1, "purple_berry": 1, "seed": 1}
         self.rect.x = x
         self.rect.y = y
+        self.display_name = "Poison Potion"
