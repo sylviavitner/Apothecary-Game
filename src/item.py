@@ -331,14 +331,15 @@ class Cauldron(Item):
     def add_item(self, to_add, quantity=1):
         if to_add:
             item = to_add.make_copy()
-            item.inside_inventory = False
-            item.inside_cauldron = True
-            item.allow_pickup = False
-            item.set_position(self.rect.x, self.rect.y - (item.size * item.scale // 2)) # stack on top for now
             if item.name in ["red_berry", "purple_berry", "seed"]:
+                item.inside_inventory = False
+                item.inside_cauldron = True
+                item.allow_pickup = False
+                item.set_position(self.rect.x, self.rect.y - (item.size * item.scale // 2)) # stack on top for now 
                 self.item_counts[to_add.name] += quantity
                 self.items.add(item)
-            return item
+                return item
+        return None
 
     def remove_item(self, to_remove, amount=1):
         remaining = amount

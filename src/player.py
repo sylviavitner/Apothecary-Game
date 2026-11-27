@@ -185,6 +185,12 @@ class Player(pygame.sprite.Sprite):
                 return slot.item
         return None
 
+    def find_first_craftable(self, inventory):
+        for slot in inventory.slots:
+            if slot.item and slot.item.name in ["red_berry", "purple_berry", "seed"]:
+                return slot.item
+        return None
+
     def place_on_stand(self, item_stand, inventory, sprites, all_items):
         to_add = self.find_first_sellable(inventory)
         if to_add is None or not self.inside_shop: # no stands outside of shop (text issues)
@@ -196,12 +202,10 @@ class Player(pygame.sprite.Sprite):
         item_stand.prompt_user()
 
     def place_in_cauldron(self, cauldron, inventory, sprites, all_items):
-        to_add = self.find_first_sellable(inventory)
+        to_add = self.find_first_craftable(inventory)
         if to_add is None:
             return
         item = cauldron.add_item(to_add)
-        if not item:
-            return
         inventory.remove(to_add, 1)
         sprites.add(item)
         all_items.add(item)
