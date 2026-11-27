@@ -344,6 +344,7 @@ class Cauldron(Item):
         remaining = amount
         for item in self.items:
             if item.name == to_remove:
+                self.item_counts[item.name] -= 1
                 item.kill()
                 remaining -= 1
             if remaining <= 0:
