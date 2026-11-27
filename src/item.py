@@ -33,6 +33,18 @@ class Item(Sprite):
                 if self.inside_inventory:
                     return Cauldron(inside_inventory=True)
                 return Cauldron(inside_inventory=False)
+            case "red_potion":
+                if self.inside_inventory:
+                    return RedPotion(inside_inventory=True)
+                return RedPotion(inside_inventory=False)
+            case "purple_potion":
+                if self.inside_inventory:
+                    return PurplePotion(inside_inventory=True)
+                return PurplePotion(inside_inventory=False)
+            case "green_potion":
+                if self.inside_inventory:
+                    return GreenPotion(inside_inventory=True)
+                return GreenPotion(inside_inventory=False)
 
 
     # creates a new instance of the item and adds the amount to inventory
@@ -261,6 +273,8 @@ class Cauldron(Item):
         self.rect.y = y
         self.market_price = 100 # shop price and reccomended selling price
         self.name = "cauldron"
+        self.potions = ["red_potion", "purple_potion", "green_potion"]
+        self.items = pygame.sprite.Group()
         self.item_counts = {
             "red_berry": 0,
             "purple_berry": 0,
@@ -275,25 +289,27 @@ class Cauldron(Item):
         for p in potions:
             recipes[p.name] = p.recipe
             p.kill()
+        print(recipes)
+        return recipes
 
-    def count_sprite_collisions(self, sprites):
-        self.sprites = pygame.sprite.Group() # reset every time so when player picks up it won't stay in the list
-        for s in sprites:
-            if not s.is_ingredient:
-                continue
-            elif pygame.sprite.collide_rect(self, s):
-                self.item_counts[s.name] += 1
+    #def count_sprite_collisions(self, sprites):
+        #self.sprites = pygame.sprite.Group() # reset every time so when player picks up it won't stay in the list
+        #for s in sprites:
+            #if not s.is_ingredient:
+                #continue
+            #elif pygame.sprite.collide_rect(self, s):
+                #self.item_counts[s.name] += 1
 
-    def craft_potion(self, sprites):
+    def craft_potion(self, sprites, all_items):
         for recipe in self.recipes:
             can_craft = True
-            self.to_remove = []
-            self.count_sprite_collisions() # recount each time so items aren't reused
-            for item, required_amount in self.recipes[recipe]:
-                if self.item_counts[item] >= required_amount:
-                    self.to_remove.append(item)
+            to_remove = {}
+            #self.count_sprite_collisions() # recount each time so items aren't reused
+            for item in self.recipes[recipe]:
+                if self.item_counts[item] >= self.recipes[recipe][item]:
+                    to_remove[item] = self.recipes[recipe][item]
                 else:
-                    self.to_remove = []
+                    to_remove = {}
                     can_craft = False
                     continue
 
@@ -306,16 +322,40 @@ class Cauldron(Item):
                     case "green_potion":
                         potion = GreenPotion(self.rect.x, self.rect.y + self.size)
 
-            sprites.add(potion)
+                for itm in to_remove:
+                    self.remove_item(itm, to_remove[item])
+                
+                sprites.add(potion)
+                all_items.add(potion)
+
+    def add_item(self, to_add, quantity=1):
+        if to_add:
+            item = to_add.make_copy()
+            item.inside_inventory = False
+            item.inside_cauldron = True
+            item.allow_pickup = False
+            item.set_position(self.rect.x, self.rect.y - (item.size * item.scale // 2)) # stack on top for now
+            if item.name in ["red_berry", "purple_berry", "seed"]:
+                self.item_counts[to_add.name] += quantity
+                self.items.add(item)
+            return item
+
+    def remove_item(self, to_remove, amount=1):
+        remaining = amount
+        for item in self.items:
+            if item.name == to_remove:
+                item.kill()
+                remaining -= 1
+            if remaining <= 0:
+                return
+
         
-            
 # flask and potions
 class EmptyFlask(Item):
     def __init__(self, x=0, y=0, inside_inventory=False):
         super().__init__("assets/empty_flask.png", "empty_flask", inside_inventory=inside_inventory)
         self.name = "empty_flask"
         self.market_price = 25
-        self.id = 0
         self.rect.x = x
         self.rect.y = y
 
@@ -324,7 +364,6 @@ class RedPotion(Item):
         super().__init__("assets/red_potion.png", "red_potion", inside_inventory=inside_inventory)
         self.market_price = 160
         self.recipe = {"red_berry": 3}
-        self.id = 1
         self.rect.x = x
         self.rect.y = y
 
@@ -333,7 +372,6 @@ class PurplePotion(Item):
         super().__init__("assets/purple_potion.png", "purple_potion", inside_inventory=inside_inventory)
         self.market_price = 190
         self.recipe = {"red_berry": 1, "purple_berry": 2}
-        self.id = 2
         self.rect.x = x
         self.rect.y = y
 
@@ -342,6 +380,5 @@ class GreenPotion(Item):
         super().__init__("assets/green_potion.png", "green_potion", inside_inventory=inside_inventory)
         self.market_price = 210
         self.recipe = {"red_berry": 1, "purple_berry": 1, "seed": 1}
-        self.id = 3
         self.rect.x = x
         self.rect.y = y

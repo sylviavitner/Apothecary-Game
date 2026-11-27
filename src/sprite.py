@@ -15,6 +15,7 @@ class Sprite(pygame.sprite.Sprite):
         self.image = self.frames_list[self.frame]
         self.show = True
         self.for_sale = False
+        self.inside_cauldron = False # plz change if time
        
     def get_image(self, frame, scale):
         img = pygame.Surface((self.size, self.size), pygame.SRCALPHA).convert_alpha()

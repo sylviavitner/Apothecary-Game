@@ -31,7 +31,9 @@ class Player(pygame.sprite.Sprite):
         self.dx = 0
         self.dy = 0
         # should probably be changed and set in specific item classes
-        self.obtainable_items = ["red_berry", "seed", "purple_berry", "item_stand", "empty_flask", "cauldron"]
+        self.obtainable_items = ["red_berry", "seed", "purple_berry", 
+                                 "item_stand", "empty_flask", "cauldron",
+                                 "red_potion", "purple_potion", "green_potion"]
 
         # Shop variables
         self.allow_shop_entry = False
@@ -133,7 +135,7 @@ class Player(pygame.sprite.Sprite):
             if self.inside_shop:
                 s.set_state(1)
                 if pygame.sprite.collide_rect(self, s):
-                    if s.name in self.obtainable_items and not s.for_sale: # added check for sale
+                    if s.name in self.obtainable_items and not s.for_sale and not s.inside_cauldron:
                         s.set_frame(1)
                         s.allow_pickup = True
                 elif s.name in self.obtainable_items:
@@ -169,7 +171,7 @@ class Player(pygame.sprite.Sprite):
                             s.set_frame(0)
 
                 # set frame for interactions with items
-                if s.name in self.obtainable_items and not s.for_sale:
+                if s.name in self.obtainable_items and not s.for_sale and not s.inside_cauldron:
                     if pygame.sprite.collide_rect(self, s):
                         s.set_frame(1)
                         s.allow_pickup = True
@@ -197,6 +199,13 @@ class Player(pygame.sprite.Sprite):
         to_add = self.find_first_sellable(inventory)
         if to_add is None:
             return
+        item = cauldron.add_item(to_add)
+        if not item:
+            return
+        inventory.remove(to_add, 1)
+        sprites.add(item)
+        all_items.add(item)
+        cauldron.craft_potion(sprites, all_items)
         ### Todo finish this method and others needed in cauldron
 
     def pickup_item(self, s, inventory, all_items, amount=1):
@@ -238,8 +247,11 @@ class Player(pygame.sprite.Sprite):
                     if s.name == "bush" and s.can_harvest:
                         s.harvest(inventory, all_items)
 
-                    elif s.for_sale:
+                    elif s.for_sale or s.inside_cauldron:
                         pass
+
+                    elif s.name == "cauldron":
+                        self.place_in_cauldron(s, inventory, m_sprites, all_items)
 
                     # for item pickup / interaction (from map)
                     # changed to allow for normal item stand pickup when outside shop
@@ -259,7 +271,7 @@ class Player(pygame.sprite.Sprite):
                                 self.place_on_stand(s, inventory, s_sprites, all_items)
 
                         elif s.name == "cauldron":
-                            self.place_in_cauldron()
+                            self.place_in_cauldron(s, inventory, s_sprites, all_items)
 
                         # items that are picked up normally
                         else:
@@ -267,15 +279,18 @@ class Player(pygame.sprite.Sprite):
 
         elif event.key == pygame.K_x: # X will remove items and item stands and add to inventory
             for s in all_items:
-                if s.for_sale:
+                if s.for_sale or s.inside_cauldron:
                     pass
                 elif s.name in self.obtainable_items and s.allow_pickup:
                     # clear item stand and return items to inventory
                     if s.name == "item_stand" and s.item:
                         self.pickup_item(s.item, inventory, all_items, amount=s.quantity)
                         s.clear()
-                    elif s.name == "item_stand":
-                        s.inside_inventory = True # todo: fix later
+                    if s.name == "cauldron" and s.items:
+                        for itm in s.items:
+                            self.pickup_item(itm, inventory, all_items, amount=1)
+                    elif s.name == "item_stand" or s.name == "cauldron":
+                        s.inside_inventory = True
                         self.pickup_item(s, inventory, all_items)
                     else:
                         self.pickup_item(s, inventory, all_items)
